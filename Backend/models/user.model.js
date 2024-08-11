@@ -91,5 +91,17 @@ const StudentSchema = new mongoose.Schema({
     }
 })
 
+const TGSchema = mongoose.Schema({
+    name: {
+        type: String,
+        require: true
+    },
+    email: {
+        type: String,
+        require: true
+    },
+    type
+})
+
 const StudModel = mongoose.model('StudModel', StudentSchema);
 export {StudModel};
