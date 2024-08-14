@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import env from "dotenv"
 
 async function dbConnector() {
 

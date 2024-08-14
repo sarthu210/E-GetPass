@@ -1,8 +1,7 @@
 import mongoose from "mongoose";
 
-
 const StudentSchema = new mongoose.Schema({
-    studentId: {
+    EnNumber: {
         type: String,
         require: true
     },
@@ -88,20 +87,13 @@ const StudentSchema = new mongoose.Schema({
     country: {
         type: String,
         require: true
+    },
+    role:{
+        type: [String],
+        enum: ['student','teacher','teachergardian'],
+        default: 'student'
     }
 })
 
-const TGSchema = mongoose.Schema({
-    name: {
-        type: String,
-        require: true
-    },
-    email: {
-        type: String,
-        require: true
-    },
-    type
-})
-
-const StudModel = mongoose.model('StudModel', StudentSchema);
+const StudModel = mongoose.model<UserDoucument>('StudModel', StudentSchema);
 export {StudModel};
