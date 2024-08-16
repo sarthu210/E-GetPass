@@ -1,33 +1,40 @@
-import { StudModel } from "../models/user.model";
+import { StudModel } from "../models/student.model";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt"
 
 async function SignUp(req, res, next) {
     try {
-        const user = req.body;
+        const {EnNumber, email, password} = req.body;
 
         const isCheck = await StudModel.find({
-            email: user.email,
-            phoneNo: user.number
+            email: email,
         });
 
-        const hashPass = bcrypt(user.password , 10);
+        const hashPass = bcrypt(password , 10);
 
         if (!isCheck) {
-            const newUser = {
-                user,
+            const newUser = await StudModel.create({
+                EnNumber,
+                email,
                 password: hashPass
-            }
-
-            await newUser.save();
-
-            res.status(200).json({
-                message: "Sign up is done successfuly"
             })
+            const createdUser = await StudModel.findById(newUser._id);
+            if(createdUser)
+            {
+                return res.status(200).json({
+                    message: "Account Created Successfuly"
+                })
+            }
+            else
+            {
+                return res.status(400).json({
+                    message: "Error Occured While Creating Account"
+                })
+            }
         }
         else {
             console.log("Sign-up Process Is Faild!")
-            res.status(400).json({
+            return res.status(400).json({
                 message: "Sign-up Process Is Faild!"
             })
         }
