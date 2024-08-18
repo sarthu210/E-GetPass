@@ -1,6 +1,6 @@
-import { StudModel } from "../models/student.model";
 import mongoose from "mongoose";
-import bcrypt from "bcrypt"
+import bcrypt from "bcrypt";
+import { StudModel } from "../models/student.model.js";
 
 
 async function generateAccessTokenAndRefreshToken(userId){
@@ -24,11 +24,9 @@ async function SignUp(req, res, next) {
     try {
         const {EnNumber, email, password} = req.body;
 
-        const isCheck = await StudModel.find({
-            email: email,
-        });
+        const isCheck = await StudModel.findOne({ email: email });
 
-        const hashPass = bcrypt(password , 10);
+        const hashPass = await bcrypt.hash(password, 10);
 
         if (!isCheck) {
             const newUser = await StudModel.create({
@@ -69,7 +67,7 @@ async function LogIn(req,res,next) {
     try {
         const { EnNumber, password } = req.body;
 
-        const checkEnNumber = await StudModel.findOne(EnNumber);
+        const checkEnNumber = await StudModel.findOne({EnNumber: EnNumber});
 
         if(!checkEnNumber)
         {
@@ -78,9 +76,9 @@ async function LogIn(req,res,next) {
             })
         }
 
-        const user = await StudModel.findOne(EnNumber);
+        const user = await StudModel.findOne({EnNumber: EnNumber});
 
-        const checkPassowrd = await StudModel.isPasswordCorrect(user.password);
+        const checkPassowrd = await user.isPasswordCorrect(password);
 
         if(!checkPassowrd)
         {
@@ -98,12 +96,13 @@ async function LogIn(req,res,next) {
             secure: true
         }
 
-        return res.status(200).cookie("accessToken",accesToken,options).cookie("refreshToken",refreshToken,options).json(loggedUserId,user);
+        return res.status(200).cookie("accessToken",accesToken,options).cookie("refreshToken",refreshToken,options).json({loggedUserId,user});
     
     } catch (error) {
         console.log("Error Occurd While Sign-In");
         return res.status(400).send({
-            message: "Error Occurd While Sign-In"
         })
     }
 }
+
+export {SignUp, LogIn};

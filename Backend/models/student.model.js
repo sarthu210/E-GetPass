@@ -22,7 +22,7 @@ const StudentSchema = new mongoose.Schema({
 })
 
 StudentSchema.methods.isPasswordCorrect = async function (password) {
-    return await bcrypt.compare(password, this.password , 10);
+    return await bcrypt.compare(password, this.password);
 }
 
 StudentSchema.methods.generateAccessToken = function () {
