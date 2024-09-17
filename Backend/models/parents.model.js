@@ -1,35 +1,45 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 
-const StudentSchema = new mongoose.Schema({
-    EnNumber: {
-        type: String,
-        require: true
-    },
+const ParentSchema = new mongoose.Schema({
     email: {
         type: String,
-        required: true,
-        unique: true,
+        require: true
     },
     password: {
         type: String,
         require: true
     },
+    EnNumber: {
+        type: String,
+        require: true
+    },
+    number: {
+        type: String,
+        require: true
+    },
+    address: {
+        type: String,
+        require: true
+    },
     role: {
         type: String,
-        default: "student"
+        default: "parent"
     },
     refreshToken: {
         type: String
     }
-})
+});
 
-StudentSchema.methods.isPasswordCorrect = async function (password) {
+const ParentModel = mongoose.model('ParentModel', ParentSchema);
+export { ParentModel };
+
+ParentModel.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password);
 }
 
-StudentSchema.methods.generateAccessToken = function () {
+ParentModel.methods.generateAccessToken = function () {
     return jwt.sign(
         {
             _id: this._id,
@@ -43,7 +53,7 @@ StudentSchema.methods.generateAccessToken = function () {
     )
 }
 
-StudentSchema.methods.generateRefreshToken = function(){
+ParentModel.methods.generateRefreshToken = function(){
     return jwt.sign(
         {
             _id: this._id
@@ -54,6 +64,3 @@ StudentSchema.methods.generateRefreshToken = function(){
         }
     )
 }
-
-const StudModel = mongoose.model('StudModel', StudentSchema);
-export { StudModel };

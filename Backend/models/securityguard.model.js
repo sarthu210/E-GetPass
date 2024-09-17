@@ -1,16 +1,11 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 
-const StudentSchema = new mongoose.Schema({
-    EnNumber: {
-        type: String,
-        require: true
-    },
+const SecurityGuardSchema = new mongoose.Schema({
     email: {
         type: String,
-        required: true,
-        unique: true,
+        require: true
     },
     password: {
         type: String,
@@ -18,22 +13,24 @@ const StudentSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        default: "student"
+        default: "securityguard"
     },
     refreshToken: {
         type: String
     }
-})
+});
 
-StudentSchema.methods.isPasswordCorrect = async function (password) {
+const SecurityGuardModel = mongoose.model('SecurityGuardModel', SecurityGuardSchema);
+export { SecurityGuardModel };
+
+SecurityGuardModel.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password);
-}
+}  
 
-StudentSchema.methods.generateAccessToken = function () {
+SecurityGuardModel.methods.generateAccessToken = function () {
     return jwt.sign(
         {
             _id: this._id,
-            EnNumber: this.EnNumber,
             email: this.email
         },
         process.env.ACCESS_TOKEN_SECRET,
@@ -41,9 +38,9 @@ StudentSchema.methods.generateAccessToken = function () {
             expiresIn: process.env.EXPIRE_ACCESS_TOKEN
         }
     )
-}
+}   
 
-StudentSchema.methods.generateRefreshToken = function(){
+SecurityGuardModel.methods.generateRefreshToken = function(){
     return jwt.sign(
         {
             _id: this._id
@@ -53,7 +50,5 @@ StudentSchema.methods.generateRefreshToken = function(){
             expiresIn: process.env.EXPIRE_REFRESH_TOKEN
         }
     )
-}
+}   
 
-const StudModel = mongoose.model('StudModel', StudentSchema);
-export { StudModel };

@@ -1,39 +1,48 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 
-const StudentSchema = new mongoose.Schema({
-    EnNumber: {
-        type: String,
-        require: true
-    },
+const HodSchema = new mongoose.Schema({
     email: {
         type: String,
-        required: true,
-        unique: true,
+        require: true
     },
     password: {
         type: String,
         require: true
     },
+    name: {
+        type: String,
+        require: true
+    },
+    number: {
+        type: String,
+        require: true
+    },
+    department: {
+        type: String,
+        require: true
+    },
     role: {
         type: String,
-        default: "student"
+        default: "hod"
     },
     refreshToken: {
         type: String
     }
-})
+});
 
-StudentSchema.methods.isPasswordCorrect = async function (password) {
+const HodModel = mongoose.model('HodModel', HodSchema);
+export { HodModel };
+
+HodModel.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password);
 }
 
-StudentSchema.methods.generateAccessToken = function () {
+HodModel.methods.generateAccessToken = function () {
     return jwt.sign(
         {
             _id: this._id,
-            EnNumber: this.EnNumber,
             email: this.email
         },
         process.env.ACCESS_TOKEN_SECRET,
@@ -43,7 +52,7 @@ StudentSchema.methods.generateAccessToken = function () {
     )
 }
 
-StudentSchema.methods.generateRefreshToken = function(){
+HodModel.methods.generateRefreshToken = function(){
     return jwt.sign(
         {
             _id: this._id
@@ -54,6 +63,3 @@ StudentSchema.methods.generateRefreshToken = function(){
         }
     )
 }
-
-const StudModel = mongoose.model('StudModel', StudentSchema);
-export { StudModel };
