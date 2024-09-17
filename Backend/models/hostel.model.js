@@ -24,14 +24,11 @@ const HostelSchema = new mongoose.Schema({
     }
 });
 
-const HostelModel = mongoose.model('HostelModel', HostelSchema);
-export { HostelModel };
-
-HostelModel.methods.isPasswordCorrect = async function (password) {
+HostelSchema.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password);
 }
 
-HostelModel.methods.generateAccessToken = function () {
+HostelSchema.methods.generateAccessToken = function () {
     return jwt.sign(
         {
             _id: this._id,
@@ -44,7 +41,7 @@ HostelModel.methods.generateAccessToken = function () {
     )
 }
 
-HostelModel.methods.generateRefreshToken = function(){
+HostelSchema.methods.generateRefreshToken = function(){
     return jwt.sign(
         {
             _id: this._id
@@ -55,3 +52,7 @@ HostelModel.methods.generateRefreshToken = function(){
         }
     )
 }
+
+const HostelModel = mongoose.model('HostelModel', HostelSchema);
+export { HostelModel };
+

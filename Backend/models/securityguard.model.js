@@ -20,14 +20,11 @@ const SecurityGuardSchema = new mongoose.Schema({
     }
 });
 
-const SecurityGuardModel = mongoose.model('SecurityGuardModel', SecurityGuardSchema);
-export { SecurityGuardModel };
-
-SecurityGuardModel.methods.isPasswordCorrect = async function (password) {
+SecurityGuardSchema.methods.isPasswordCorrect = async function (password) { 
     return await bcrypt.compare(password, this.password);
-}  
+}
 
-SecurityGuardModel.methods.generateAccessToken = function () {
+SecurityGuardSchema.methods.generateAccessToken = function () {
     return jwt.sign(
         {
             _id: this._id,
@@ -40,7 +37,7 @@ SecurityGuardModel.methods.generateAccessToken = function () {
     )
 }   
 
-SecurityGuardModel.methods.generateRefreshToken = function(){
+SecurityGuardSchema.methods.generateRefreshToken = function(){
     return jwt.sign(
         {
             _id: this._id
@@ -51,4 +48,9 @@ SecurityGuardModel.methods.generateRefreshToken = function(){
         }
     )
 }   
+
+const SecurityGuardModel = mongoose.model('SecurityGuardModel', SecurityGuardSchema);
+export { SecurityGuardModel };
+
+   
 

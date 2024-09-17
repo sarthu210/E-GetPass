@@ -1,4 +1,4 @@
-import {StudentModel} from './student.model.js';
+import {StudModel} from './student.model.js';
 import  {HodModel}  from './hod.model.js';
 import { TeacherModel } from './teacher.model.js';
 import { SecurityGuardModel } from './securityguard.model.js';
@@ -7,7 +7,7 @@ import { ParentModel } from './parents.model.js';
 import { HostelModel } from './hostel.model.js';
 
 const modelsMap = {
-    student: StudentModel,
+    student: StudModel,
     hod: HodModel,
     teacher: TeacherModel,
     securityguard: SecurityGuardModel,

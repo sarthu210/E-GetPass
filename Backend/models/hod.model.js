@@ -31,15 +31,11 @@ const HodSchema = new mongoose.Schema({
         type: String
     }
 });
-
-const HodModel = mongoose.model('HodModel', HodSchema);
-export { HodModel };
-
-HodModel.methods.isPasswordCorrect = async function (password) {
+HodSchema.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password);
 }
 
-HodModel.methods.generateAccessToken = function () {
+HodSchema.methods.generateAccessToken = function () {
     return jwt.sign(
         {
             _id: this._id,
@@ -52,7 +48,7 @@ HodModel.methods.generateAccessToken = function () {
     )
 }
 
-HodModel.methods.generateRefreshToken = function(){
+HodSchema.methods.generateRefreshToken = function(){
     return jwt.sign(
         {
             _id: this._id
@@ -63,3 +59,7 @@ HodModel.methods.generateRefreshToken = function(){
         }
     )
 }
+
+const HodModel = mongoose.model('HodModel', HodSchema);
+export { HodModel };
+

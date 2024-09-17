@@ -22,15 +22,11 @@ const AdminSchema = new mongoose.Schema(
 
     }
 )
-
-const AdminModel = mongoose.model('AdminModel', AdminSchema);
-export { AdminModel };
-
-AdminModel.methods.isPasswordCorrect = async function (password) {
+AdminSchema.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password);
 }
 
-AdminModel.methods.generateAccessToken = function () {
+AdminSchema.methods.generateAccessToken = function () {
     return jwt.sign(
         {
             _id: this._id,
@@ -44,7 +40,7 @@ AdminModel.methods.generateAccessToken = function () {
     )
 }
 
-AdminModel.methods.generateRefreshToken = function(){
+AdminSchema.methods.generateRefreshToken = function(){
     return jwt.sign(
         {
             _id: this._id
@@ -55,3 +51,7 @@ AdminModel.methods.generateRefreshToken = function(){
         }
     )
 }
+
+const AdminModel = mongoose.model('AdminModel', AdminSchema);
+export { AdminModel };
+

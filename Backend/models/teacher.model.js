@@ -36,14 +36,11 @@ const TeacherSchema = new mongoose.Schema({
     }
 });
 
-const TeacherModel = mongoose.model('TeacherModel', TeacherSchema);
-export { TeacherModel };
-
-TeacherModel.methods.isPasswordCorrect = async function (password) {
+TeacherSchema.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password);
 }
 
-TeacherModel.methods.generateAccessToken = function () {
+TeacherSchema.methods.generateAccessToken = function () {
     return jwt.sign(
         {
             _id: this._id,
@@ -56,7 +53,7 @@ TeacherModel.methods.generateAccessToken = function () {
     )
 }
 
-TeacherModel.methods.generateRefreshToken = function(){
+TeacherSchema.methods.generateRefreshToken = function(){
     return jwt.sign(
         {
             _id: this._id
@@ -67,3 +64,7 @@ TeacherModel.methods.generateRefreshToken = function(){
         }
     )
 }
+
+const TeacherModel = mongoose.model('TeacherModel', TeacherSchema);
+export { TeacherModel };
+

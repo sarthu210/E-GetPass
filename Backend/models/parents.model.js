@@ -32,14 +32,11 @@ const ParentSchema = new mongoose.Schema({
     }
 });
 
-const ParentModel = mongoose.model('ParentModel', ParentSchema);
-export { ParentModel };
-
-ParentModel.methods.isPasswordCorrect = async function (password) {
+ParentSchema.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password);
 }
 
-ParentModel.methods.generateAccessToken = function () {
+ParentSchema.methods.generateAccessToken = function () {
     return jwt.sign(
         {
             _id: this._id,
@@ -53,7 +50,7 @@ ParentModel.methods.generateAccessToken = function () {
     )
 }
 
-ParentModel.methods.generateRefreshToken = function(){
+ParentSchema.methods.generateRefreshToken = function(){
     return jwt.sign(
         {
             _id: this._id
@@ -64,3 +61,8 @@ ParentModel.methods.generateRefreshToken = function(){
         }
     )
 }
+
+const ParentModel = mongoose.model('ParentModel', ParentSchema);
+export { ParentModel };
+
+

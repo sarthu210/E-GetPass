@@ -21,23 +21,36 @@ async function generateAccessTokenAndRefreshToken(userId, Model) {
 
 async function SignUp(req, res, next) {
     try {
-        const { role, EnNumber, email, password } = req.body;
+        const { role, EnNumber, email, password, ...otherDetails } = req.body;
 
         const Model = modelsMap[role.toLowerCase()];
+        console.log(Model);
         if (!Model) {
             return res.status(400).json({ message: "Invalid role" });
         }
 
         const isCheck = await Model.findOne({ email: email });
 
+        if(isCheck){
+            return res.status(400).json({
+                message: "User Already Exists"
+            });
+        }
+
+        console.log(isCheck);
+
         const hashPass = await bcrypt.hash(password, 10);
+
+        
 
         if (!isCheck) {
             const newUser = await Model.create({
-                EnNumber,
                 email,
-                password: hashPass
+                password: hashPass,
+                ...(EnNumber && { EnNumber }),
+                ...otherDetails
             });
+            console.log(newUser)
             const createdUser = await Model.findById(newUser._id);
             if (createdUser) {
                 return res.status(200).json({
@@ -65,14 +78,19 @@ async function SignUp(req, res, next) {
 
 async function LogIn(req, res, next) {
     try {
-        const { role, EnNumber, password } = req.body;
+        const { role,email, EnNumber, password } = req.body;
 
         const Model = modelsMap[role.toLowerCase()];
         if (!Model) {
             return res.status(400).json({ message: "Invalid role" });
         }
 
-        const user = await Model.findOne({ EnNumber: EnNumber });
+        const user = await Model.findOne({
+            $or: [
+                { EnNumber: EnNumber },
+                { email: email }
+            ]
+        });
 
         if (!user) {
             return res.status(400).json({
