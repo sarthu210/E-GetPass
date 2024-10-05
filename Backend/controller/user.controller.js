@@ -6,9 +6,7 @@ async function generateAccessTokenAndRefreshToken(userId, Model) {
     try {
         const user = await Model.findById(userId);
         const accesToken = user.generateAccessToken();
-        const refreshToken = user.generateRefreshToken();
-
-        user.refreshToken = refreshToken;
+        const refreshToken = user.refreshToken;
 
         await user.save({ validateBeforeSave: false });
 
@@ -53,8 +51,17 @@ async function SignUp(req, res, next) {
             console.log(newUser)
             const createdUser = await Model.findById(newUser._id);
             if (createdUser) {
+                const accessToken = createdUser.generateAccessToken();
+                const refreshToken = createdUser.generateRefreshToken();
+
+                // Save the refresh token in the database
+                createdUser.refreshToken = refreshToken;
+                await createdUser.save();
+
                 return res.status(200).json({
-                    message: "Account Created Successfully"
+                    message: "Account Created Successfully",
+                    accessToken: accessToken,
+                    refreshToken: refreshToken
                 });
             } else {
                 return res.status(400).json({
@@ -86,11 +93,10 @@ async function LogIn(req, res, next) {
         }
 
         const user = await Model.findOne({
-            $or: [
-                { EnNumber: EnNumber },
-                { email: email }
-            ]
+        email: email 
         });
+
+        console.log(user)
 
         if (!user) {
             return res.status(400).json({
@@ -125,4 +131,24 @@ async function LogIn(req, res, next) {
     }
 }
 
-export { SignUp, LogIn };
+async function getUser(req,res) {
+    try {
+        const user = req.user;
+        if(!user)
+        {
+            return res.status(400).json({
+                message: "Unauthorized User1"
+            })
+        }
+        res.status(200).json({
+            user
+        })
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Internal Server Error"
+        })
+    }
+}
+
+export { SignUp, LogIn, getUser };

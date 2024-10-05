@@ -16,6 +16,26 @@ const StudentSchema = new mongoose.Schema({
         type: String,
         require: true
     },
+    number: {
+        type: String,
+        require: true
+    },
+    department: {
+        type: String,
+        require: true
+    },
+    tgName: {
+        type: String,
+        require: true
+    },
+    parentNumber: {
+        type: String,
+        require: true
+    },
+    yearOfStudy: {
+        type: String,
+        require: true
+    },
     role: {
         type: String,
         default: "student"
