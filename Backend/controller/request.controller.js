@@ -1,10 +1,22 @@
 import { RequestModel } from "../models/request.model";
 import { StudentModel } from "../models/student.model";
-
+import jwt from "jsonwebtoken";
+import modelsMap from "../models/modelMap";
 
 async function createRequest(req, res) {
     try {
-        const user = req.user;
+
+        const token = req.cookies?.accessToken || req.body?.accessToken;
+
+        if(!token){
+            req.status(400).json({
+                message: "Inavlid Access Token"
+            })
+        }
+
+        const decodeToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+
+        const user = await StudentModel.findById(decodeToken?._id);
 
         if(!user)
         {
@@ -48,17 +60,17 @@ async function createRequest(req, res) {
 
 async function getAllRequest(req,res) {
     try {
-        const user = req.user;
+        const department = req.department;
 
-        if(!user)
+        if(!department)
         {
-            return res.status(400).json({
-                message: "Unauthorized User"
+            res.status(400).json({
+                message: "Unable to fetch department"
             })
         }
 
         const requests = await RequestModel.find({
-            EnNumber: user.EnNumber
+            department: department
         });
 
         if(!requests)
@@ -68,10 +80,8 @@ async function getAllRequest(req,res) {
             })
         }
 
-        return res.status(200).json({
-            requests
-        })
-        
+       return res.status(200).json({requests});
+
     } catch (error) {
         console.log(error);
         return res.status(500).json({
@@ -80,27 +90,12 @@ async function getAllRequest(req,res) {
     }
 }
 
-async function hodApproval(req,res) {
+async function RequestApproval(req,res) {
     try {
-        const user = req.user;
+        const requestId = req.body.requestId;
+        const role = req.body.role;
 
-        if(!user)
-        {
-            return res.status(400).json({
-                message: "Unauthorized User"
-            })
-        }
-
-        if(user.role != "hod")
-        {
-            return res.status(400).json({
-                message: "Invalid User Role"
-            })
-        }
-
-        const request = await RequestModel.find({
-            department: user.department
-        });
+        const request = await RequestModel.findById(requestId);
 
         if(!request)
         {
@@ -109,6 +104,32 @@ async function hodApproval(req,res) {
             })
         }
 
+        if(role == "hod")
+        {
+            request.hodApproval = true;
+        }
+
+        if(role == "teacher")
+        {
+            request.teacherApproval = true;
+        }
+
+        if(role == "securityguard")
+        {
+            request.securityApproval = true;
+        }
+
+        if(role === "hostel")
+        {
+            request.hostelApproval = true;
+        }
+
+        await request.save();
+
+        return res.status(200).json({
+            message: "Request Approved Successfully"
+        })    
+
     } catch (error) {
         console.log(error);
         return res.status(500).json({
@@ -117,3 +138,5 @@ async function hodApproval(req,res) {
         
     }
 }
+
+export { createRequest, getAllRequest, RequestApproval };

@@ -44,7 +44,8 @@ TeacherSchema.methods.generateAccessToken = function () {
     return jwt.sign(
         {
             _id: this._id,
-            email: this.email
+            email: this.email,
+            role: this.role
         },
         process.env.ACCESS_TOKEN_SECRET,
         {
@@ -56,7 +57,8 @@ TeacherSchema.methods.generateAccessToken = function () {
 TeacherSchema.methods.generateRefreshToken = function(){
     return jwt.sign(
         {
-            _id: this._id
+            _id: this._id,
+            role: this.role
         },
         process.env.REFRESH_TOKEN_SECRET,
         {

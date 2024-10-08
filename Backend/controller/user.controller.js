@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import modelsMap from "../models/modelMap.js";
+import jwt from "jsonwebtoken";
 
 async function generateAccessTokenAndRefreshToken(userId, Model) {
     try {
@@ -48,7 +49,7 @@ async function SignUp(req, res, next) {
                 ...(EnNumber && { EnNumber }),
                 ...otherDetails
             });
-            console.log(newUser)
+
             const createdUser = await Model.findById(newUser._id);
             if (createdUser) {
                 const accessToken = createdUser.generateAccessToken();
@@ -133,7 +134,24 @@ async function LogIn(req, res, next) {
 
 async function getUser(req,res) {
     try {
-        const user = req.user;
+        const token =  req.body?.accessToken;
+
+        console.log(token);
+
+        if(!token){
+            req.status(400).json({
+                message: "Unauthorized User"
+            })
+        }
+
+        const decodeToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+
+        const role = decodeToken.role;
+
+        const User = modelsMap[role.toLowerCase()];
+
+        const user = await User.findById(decodeToken?._id);
+        
         if(!user)
         {
             return res.status(400).json({
@@ -150,5 +168,64 @@ async function getUser(req,res) {
         })
     }
 }
+async function refreshAccessToke (req, res) {
+    const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
 
-export { SignUp, LogIn, getUser };
+
+    if (!incomingRefreshToken) {
+        res.status(400).json({
+            message: "Refresh token is required"
+        })
+    }
+
+    try {
+        const decodedToken = jwt.verify(
+            incomingRefreshToken,
+            process.env.REFRESH_TOKEN_SECRET
+        )
+
+        console.log("decoded: ", decodedToken);
+
+        const role = decodedToken.role;
+        const User = modelsMap[role.toLowerCase()];
+    
+        const user = await User.findById(decodedToken?._id)
+
+        console.log("redess: ",user);
+    
+        if (!user) {
+            res.status(400).json({
+                message: "Inavlid refresh token"
+            })
+        }
+    
+        if (incomingRefreshToken !== user?.refreshToken) {
+            res.status(400).json({
+                message: "Invalid refresh token"
+            })  
+        }
+    
+        const options = {
+            httpOnly: true,
+            secure: true
+        }
+    
+        const {accessToken, newRefreshToken} = await generateAccessTokenAndRefreshToken(user._id,User)
+        console.log(accessToken, newRefreshToken);
+    
+        return res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", newRefreshToken, options)
+        .json( {accessToken, refreshToken: newRefreshToken , message: "Access token refreshed"})
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: "Internal Server Error"
+        })
+    }
+
+}
+
+
+export { SignUp, LogIn, getUser, refreshAccessToke };
