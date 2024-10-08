@@ -1,7 +1,7 @@
-import { RequestModel } from "../models/request.model";
-import { StudentModel } from "../models/student.model";
+import { RequestModel } from "../models/request.model.js";
+import { StudModel } from "../models/student.model.js";
 import jwt from "jsonwebtoken";
-import modelsMap from "../models/modelMap";
+import modelsMap from "../models/modelMap.js";
 
 async function createRequest(req, res) {
     try {
@@ -16,7 +16,7 @@ async function createRequest(req, res) {
 
         const decodeToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
-        const user = await StudentModel.findById(decodeToken?._id);
+        const user = await StudModel.findById(decodeToken?._id);
 
         if(!user)
         {
@@ -60,7 +60,7 @@ async function createRequest(req, res) {
 
 async function getAllRequest(req,res) {
     try {
-        const department = req.department;
+        const department = req.body.department;
 
         if(!department)
         {

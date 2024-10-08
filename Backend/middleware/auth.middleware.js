@@ -3,7 +3,7 @@ import { StudModel } from "../models/student.model.js";
 
 async function verifyHandler(req,res,next) {
     try {
-        const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
+        const token = req.cookies?.accessToken || req.body?.accessToken;
         console.log(token);
         if(!token)
         {

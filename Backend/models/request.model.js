@@ -21,7 +21,7 @@ const RequestSchema = new mongoose.Schema({
         type: String,
         require: true
     },
-    role: {
+    tg_batch: {
         type: String,
         require: true
     },
@@ -48,9 +48,6 @@ const RequestSchema = new mongoose.Schema({
     isMessageSend: {
         type: Boolean,
         default: false
-    },
-    refreshToken: {
-        type: String
     },
     date: {
         type: Date,

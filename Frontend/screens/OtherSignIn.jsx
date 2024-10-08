@@ -17,7 +17,7 @@ const OtherSignIn = ({ navigation }) => {
   const handleSignIn = async () => {
     try {
       console.log(email, password, role);
-      const response = await axios.post('http://192.168.185.253:3000/api/sign-in', {
+      const response = await axios.post('http://192.168.198.253:3000/api/sign-in', {
         email: email,
         password: password,
         role: role,

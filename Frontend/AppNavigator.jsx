@@ -21,7 +21,7 @@ const AppNavigator = () => {
   return (
     <Provider store={store}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Dashboard">
+        <Stack.Navigator initialRouteName="Home">
           <Stack.Screen name="Dashboard">
             {props => <DashboardScreen {...props} onLogout={handleLogout} />}
           </Stack.Screen>

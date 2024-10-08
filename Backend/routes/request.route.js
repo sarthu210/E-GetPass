@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { createRequest } from '../controller/request.controller';
-import { RequestApproval } from '../controller/request.controller';
-import { getAllRequest } from '../controller/request.controller';
+import { createRequest } from '../controller/request.controller.js';
+import { RequestApproval } from '../controller/request.controller.js';
+import { getAllRequest } from '../controller/request.controller.js';
 
 const routes = new Router();
 

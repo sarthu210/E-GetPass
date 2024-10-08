@@ -1,53 +1,92 @@
-import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Button, StyleSheet, ScrollView } from 'react-native';
+import axios from 'axios';
 
 const ShowRequests = () => {
-  // Sample gate pass request data following the schema
-  const [sampleRequest, setSampleRequest] = useState({
-    EnNumber: '12345',
-    email: 'john.doe@example.com',
-    name: 'John Doe',
-    number: '9876543210',
-    department: 'Computer Science',
-    role: 'Student',
-    reason: 'Visiting home for the weekend',
-    teacherApproval: false,
-    hodApproval: false,
-    hostelApproval: false,
-    securityApproval: false,
-    isMessageSend: false,
-    refreshToken: 'xyz123',
-    date: new Date().toLocaleString(),
-  });
+  const [requests, setRequests] = useState([]); // Initialize with an empty array
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch requests from the API when component mounts
+  useEffect(() => {
+    const fetchRequests = async () => {
+      try {
+        const response = await axios.post('http://192.168.198.253:3000/api/request/get-requests', {
+          department: 'Computer Science'
+        });
+        console.log(response.data); // Make sure this is an array
+        setRequests(response.data.requests); // Set the requests data from response
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    fetchRequests();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Loading requests...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Error: {error}</Text>
+      </View>
+    );
+  }
+
+  if (!Array.isArray(requests)) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>No valid data received</Text>
+      </View>
+    );
+  }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Sample Gate Pass Request</Text>
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>Gate Pass Requests</Text>
 
-      {/* Render Sample Request */}
-      <Text style={styles.info}>Enrollment Number: {sampleRequest.EnNumber}</Text>
-      <Text style={styles.info}>Email: {sampleRequest.email}</Text>
-      <Text style={styles.info}>Name: {sampleRequest.name}</Text>
-      <Text style={styles.info}>Number: {sampleRequest.number}</Text>
-      <Text style={styles.info}>Department: {sampleRequest.department}</Text>
-      <Text style={styles.info}>Role: {sampleRequest.role}</Text>
-      <Text style={styles.info}>Reason: {sampleRequest.reason}</Text>
-      <Text style={styles.info}>Teacher Approval: {sampleRequest.teacherApproval ? 'Approved' : 'Pending'}</Text>
-      <Text style={styles.info}>HOD Approval: {sampleRequest.hodApproval ? 'Approved' : 'Pending'}</Text>
-      <Text style={styles.info}>Hostel Approval: {sampleRequest.hostelApproval ? 'Approved' : 'Pending'}</Text>
-      <Text style={styles.info}>Security Approval: {sampleRequest.securityApproval ? 'Approved' : 'Pending'}</Text>
-      <Text style={styles.info}>Message Sent: {sampleRequest.isMessageSend ? 'Yes' : 'No'}</Text>
-      <Text style={styles.info}>Date: {sampleRequest.date}</Text>
+      {requests.map((request) => (
+        <View key={request._id} style={styles.requestContainer}>
+          <Text style={styles.info}>Enrollment Number: {request.EnNumber}</Text>
+          <Text style={styles.info}>Email: {request.email}</Text>
+          <Text style={styles.info}>Name: {request.name}</Text>
+          <Text style={styles.info}>Number: {request.number}</Text>
+          <Text style={styles.info}>Department: {request.department}</Text>
+          <Text style={styles.info}>Reason: {request.reason}</Text>
+          <Text style={styles.info}>Teacher Approval: {request.teacherApproval ? 'Approved' : 'Pending'}</Text>
+          <Text style={styles.info}>HOD Approval: {request.hodApproval ? 'Approved' : 'Pending'}</Text>
+          <Text style={styles.info}>Hostel Approval: {request.hostelApproval ? 'Approved' : 'Pending'}</Text>
+          <Text style={styles.info}>Security Approval: {request.securityApproval ? 'Approved' : 'Pending'}</Text>
+          <Text style={styles.info}>Message Sent: {request.isMessageSend ? 'Yes' : 'No'}</Text>
+          <Text style={styles.info}>Date: {new Date(request.date).toLocaleString()}</Text>
+        </View>
+      ))}
 
-      <Button title="Refresh Data" onPress={() => setSampleRequest({ ...sampleRequest, date: new Date().toLocaleString() })} />
-    </View>
+      <Button title="Refresh Data" onPress={() => {
+        setLoading(true);
+        axios.post('http://192.168.198.253:3000/api/request/get-requests', {
+          department: 'Computer Science'
+        })
+          .then(response => setRequests(response.data))
+          .catch(err => setError(err.message))
+          .finally(() => setLoading(false));
+      }} />
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     padding: 20,
     backgroundColor: '#f5f5f5',
   },
@@ -58,9 +97,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'black',
   },
+  requestContainer: {
+    marginBottom: 20,
+    padding: 15,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
   info: {
-    fontSize: 18,
-    marginBottom: 10,
+    fontSize: 16,
+    marginBottom: 8,
     color: 'black',
   },
 });
