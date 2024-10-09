@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import api from '../utils/api';
+import { useDispatch } from 'react-redux';
+import { login } from '../slice/userSlice';
 import axios from 'axios';
 
 const StudSignIn = ({ navigation }) => {
@@ -7,21 +10,22 @@ const StudSignIn = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const dispatch  = useDispatch();
 
   const handleSignIn = async () => {
     try {
-      const response = await axios.post('http://your-api-url/signin', {
+      console.log("in handleSignIn");
+      console.log(enNumber, email, password);
+      const response = await api.post('/api/sign-in', {
         EnNumber: enNumber,
         email: email,
         password: password,
+        role: 'student',
       });
 
-      const { accessToken, refreshToken, user } = response.data;
-
-      // Store tokens and user data
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
-      localStorage.setItem('user', JSON.stringify(user));
+      user = response.data.user;
+      dispatch(login(user));
+      console.log(response.data);
 
       // Redirect to dashboard
       navigation.navigate('Dashboard');

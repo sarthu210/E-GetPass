@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import { useDispatch } from 'react-redux';
 import { login } from '../slice/userSlice';
+import api from '../utils/api';
 import CookieManager from '@react-native-cookies/cookies';
 
 const OtherSignIn = ({ navigation }) => {
@@ -17,13 +18,12 @@ const OtherSignIn = ({ navigation }) => {
   const handleSignIn = async () => {
     try {
       console.log(email, password, role);
-      const response = await axios.post('http://192.168.198.253:3000/api/sign-in', {
+      const response = await api.post('/api/sign-in', {
         email: email,
         password: password,
         role: role,
       });
 
-      console.log(response.data.user);
       const user = response.data.user;
 
       dispatch(login(user));
@@ -32,9 +32,6 @@ const OtherSignIn = ({ navigation }) => {
       await AsyncStorage.setItem('refreshToken', refreshToken);
       await AsyncStorage.setItem('user', JSON.stringify(user));
 
-      // Handle cookies
-     
-      // Redirect to dashboard
       navigation.navigate('Dashboard');
     } catch (error) {
       console.error('Sign In Error:', error);

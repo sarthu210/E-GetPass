@@ -122,7 +122,7 @@ async function LogIn(req, res, next) {
             secure: true
         };
 
-        return res.status(200).cookie("accessToken", accesToken, options).cookie("refreshToken", refreshToken, options).json({ loggedUserId, user });
+        return res.status(200).cookie("accessToken", accesToken, options).cookie("refreshToken", refreshToken, options).json({ loggedUserId, user, accessToken: accesToken, refreshToken: refreshToken });
 
     } catch (error) {
         console.log("Error Occurred While Sign-In");

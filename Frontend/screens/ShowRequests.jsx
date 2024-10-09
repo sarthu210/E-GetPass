@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet, ScrollView } from 'react-native';
 import axios from 'axios';
+import api from '../utils/api';
 
 const ShowRequests = () => {
   const [requests, setRequests] = useState([]); // Initialize with an empty array
@@ -11,10 +12,10 @@ const ShowRequests = () => {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const response = await axios.post('http://192.168.198.253:3000/api/request/get-requests', {
+        const response = await api.post('/api/request/get-requests', {
           department: 'Computer Science'
         });
-        console.log(response.data); // Make sure this is an array
+// Make sure this is an array
         setRequests(response.data.requests); // Set the requests data from response
         setLoading(false);
       } catch (err) {
@@ -70,16 +71,21 @@ const ShowRequests = () => {
           <Text style={styles.info}>Date: {new Date(request.date).toLocaleString()}</Text>
         </View>
       ))}
-
-      <Button title="Refresh Data" onPress={() => {
-        setLoading(true);
-        axios.post('http://192.168.198.253:3000/api/request/get-requests', {
+      <View style={styles.Button}>
+      <Button style={styles.Button} title="Refresh Data" onPress={async () => {
+            try {
+        const response = await api.post('/api/request/get-requests', {
           department: 'Computer Science'
-        })
-          .then(response => setRequests(response.data))
-          .catch(err => setError(err.message))
-          .finally(() => setLoading(false));
-      }} />
+        });
+        setRequests(response.data.requests); // Set the requests data from response
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+      }
+        }} />
+      </View>
+      
     </ScrollView>
   );
 };
@@ -89,6 +95,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#f5f5f5',
+    height: '100%',
   },
   title: {
     fontSize: 24,
@@ -113,6 +120,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     color: 'black',
   },
+  Button: {
+    marginBottom: 30,
+  }
 });
 
 export default ShowRequests;
