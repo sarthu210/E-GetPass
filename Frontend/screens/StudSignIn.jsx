@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../utils/api';
 import { useDispatch } from 'react-redux';
 import { login } from '../slice/userSlice';
@@ -25,6 +26,10 @@ const StudSignIn = ({ navigation }) => {
 
       user = response.data.user;
       dispatch(login(user));
+
+      AsyncStorage.setItem('user', JSON.stringify(user));
+      AsyncStorage.setItem('accessToken', response.data.accessToken);
+      AsyncStorage.setItem('refreshToken', response.data.refreshToken);
       console.log(response.data);
 
       // Redirect to dashboard

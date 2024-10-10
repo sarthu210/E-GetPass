@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet, ScrollView } from 'react-native';
 import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
 import api from '../utils/api';
 
 const ShowRequests = () => {
   const [requests, setRequests] = useState([]); // Initialize with an empty array
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const dispatch = useDispatch();
+
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
 
   // Fetch requests from the API when component mounts
   useEffect(() => {
@@ -63,12 +67,27 @@ const ShowRequests = () => {
           <Text style={styles.info}>Number: {request.number}</Text>
           <Text style={styles.info}>Department: {request.department}</Text>
           <Text style={styles.info}>Reason: {request.reason}</Text>
-          <Text style={styles.info}>Teacher Approval: {request.teacherApproval ? 'Approved' : 'Pending'}</Text>
-          <Text style={styles.info}>HOD Approval: {request.hodApproval ? 'Approved' : 'Pending'}</Text>
-          <Text style={styles.info}>Hostel Approval: {request.hostelApproval ? 'Approved' : 'Pending'}</Text>
-          <Text style={styles.info}>Security Approval: {request.securityApproval ? 'Approved' : 'Pending'}</Text>
+          <Text style={styles.info}>Teacher Approval: {request.teacherApproval ? <View style={styles.approve}><Text>Approved</Text></View> : <View style={styles.unapprove}><Text>Pending</Text></View>}</Text>
+          <Text style={styles.info}>HOD Approval: {request.hodApproval ? <View style={styles.approve}><Text>Approved</Text></View> : <View style={styles.unapprove}><Text>Pending</Text></View>}</Text>
+          <Text style={styles.info}>Hostel Approval: {request.hostelApproval ? <View style={styles.approve}><Text>Approved</Text></View> : <View style={styles.unapprove}><Text>Pending</Text></View>}</Text>
+          <Text style={styles.info}>Security Approval: {request.securityApproval ? <View style={styles.approve}><Text>Approved</Text></View> : <View style={styles.unapprove}><Text>Pending</Text></View>}</Text>
           <Text style={styles.info}>Message Sent: {request.isMessageSend ? 'Yes' : 'No'}</Text>
           <Text style={styles.info}>Date: {new Date(request.date).toLocaleString()}</Text>
+          <Button title="Approve" onPress={async () => {
+            try {
+              await api.post('/api/request/approve-request', {
+                requestId: request._id,
+                role : user.role
+              });
+              // Refresh the requests data
+              const response = await api.post('/api/request/get-requests', {
+                department: 'Computer Science'
+              });
+              setRequests(response.data.requests); // Set the requests data from response
+            } catch (err) {
+              setError(err.message);
+            }
+          } } />
         </View>
       ))}
       <View style={styles.Button}>
@@ -116,13 +135,24 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   info: {
-    fontSize: 16,
+    fontSize: 15,
     marginBottom: 8,
     color: 'black',
   },
   Button: {
     marginBottom: 30,
-  }
+  },
+  approve: {
+    backgroundColor: 'green',
+    padding: 2,
+    borderRadius: 5,
+  },
+  unapprove: {
+    backgroundColor: 'red',
+    padding: 2,
+    borderRadius: 5,
+    color: 'white'
+  },
 });
 
 export default ShowRequests;

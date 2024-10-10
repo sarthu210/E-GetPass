@@ -62,7 +62,8 @@ async function SignUp(req, res, next) {
                 return res.status(200).json({
                     message: "Account Created Successfully",
                     accessToken: accessToken,
-                    refreshToken: refreshToken
+                    refreshToken: refreshToken,
+                    user: createdUser
                 });
             } else {
                 return res.status(400).json({
@@ -122,7 +123,7 @@ async function LogIn(req, res, next) {
             secure: true
         };
 
-        return res.status(200).cookie("accessToken", accesToken, options).cookie("refreshToken", refreshToken, options).json({ loggedUserId, user, accessToken: accesToken, refreshToken: refreshToken });
+        return res.status(200).cookie("accessToken", accesToken, options).cookie("refreshToken", refreshToken, options).json({ user, accessToken: accesToken, refreshToken: refreshToken });
 
     } catch (error) {
         console.log("Error Occurred While Sign-In");
