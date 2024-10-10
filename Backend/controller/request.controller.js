@@ -32,7 +32,7 @@ async function createRequest(req, res) {
             })
         }
 
-        const { EnNumber, email, name, number, department, role, reason } = req.body;
+        const { EnNumber, email, name, number, tg_batch, department, role, reason } = req.body;
 
         const request = new RequestModel({
             EnNumber,
@@ -41,7 +41,8 @@ async function createRequest(req, res) {
             number,
             department,
             role,
-            reason
+            reason,
+            tg_batch
         });
 
         await request.save();

@@ -17,7 +17,6 @@ const OtherSignIn = ({ navigation }) => {
 
   const handleSignIn = async () => {
     try {
-      console.log(email, password, role);
       const response = await api.post('/api/sign-in', {
         email: email,
         password: password,
@@ -27,7 +26,7 @@ const OtherSignIn = ({ navigation }) => {
       const user = response.data.user;
 
       dispatch(login(user));
-      // Store tokens and user data
+
       const { refreshToken} = response.data.user;
       await AsyncStorage.setItem('refreshToken', refreshToken);
       await AsyncStorage.setItem('user', JSON.stringify(user));

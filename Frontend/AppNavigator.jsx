@@ -6,7 +6,8 @@ import HomeScreen from './screens/HomeScreen';
 import StudSignIn from './screens/StudSignIn';
 import OtherSignIn from './screens/OtherSignIn';
 import DashboardScreen from './screens/DashboardScreen'; 
-import ShowRequests from './screens/ShowRequests';// Ensure this import is correct
+import ShowRequests from './screens/ShowRequests';
+import CreateRequest from './screens/CreateRequest';
 import { Provider } from 'react-redux';
 import store from './store/store';
 
@@ -30,6 +31,7 @@ const AppNavigator = () => {
           <Stack.Screen name="StudSignIn" component={StudSignIn} />
           <Stack.Screen name="OtherSignIn" component={OtherSignIn} />
           <Stack.Screen name="showReq" component={ShowRequests} />
+          <Stack.Screen name="Create" component={CreateRequest} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

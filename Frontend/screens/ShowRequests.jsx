@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../utils/api';
 
-const ShowRequests = () => {
+function ShowRequests() {
   const [requests, setRequests] = useState([]); // Initialize with an empty array
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
