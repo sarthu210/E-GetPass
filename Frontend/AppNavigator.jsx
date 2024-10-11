@@ -8,6 +8,7 @@ import OtherSignIn from './screens/OtherSignIn';
 import DashboardScreen from './screens/DashboardScreen'; 
 import ShowRequests from './screens/ShowRequests';
 import CreateRequest from './screens/CreateRequest';
+import StudDashboard from './screens/StudDahsboard';
 import { Provider } from 'react-redux';
 import store from './store/store';
 
@@ -32,6 +33,7 @@ const AppNavigator = () => {
           <Stack.Screen name="OtherSignIn" component={OtherSignIn} />
           <Stack.Screen name="showReq" component={ShowRequests} />
           <Stack.Screen name="Create" component={CreateRequest} />
+          <Stack.Screen name="StudDashboard" component={StudDashboard} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

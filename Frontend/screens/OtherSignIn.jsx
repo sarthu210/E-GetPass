@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import axios from 'axios';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import { useDispatch } from 'react-redux';
@@ -12,8 +11,8 @@ const OtherSignIn = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [role, setRole] = useState('Teacher'); // Default role
-  const dispatch  = useDispatch();
+  const [role, setRole] = useState('Teacher');
+  const dispatch = useDispatch();
 
   const handleSignIn = async () => {
     try {
@@ -27,7 +26,7 @@ const OtherSignIn = ({ navigation }) => {
 
       dispatch(login(user));
 
-      const { refreshToken} = response.data.user;
+      const { refreshToken } = response.data.user;
       await AsyncStorage.setItem('refreshToken', refreshToken);
       await AsyncStorage.setItem('user', JSON.stringify(user));
 
@@ -39,94 +38,153 @@ const OtherSignIn = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Sign In</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        placeholderTextColor="#999"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <View style={styles.passwordContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          placeholderTextColor="#999"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry={!showPassword}
-        />
-        <TouchableOpacity
-          style={styles.showPasswordButton}
-          onPress={() => setShowPassword(!showPassword)}
-        >
-          <Text style={styles.showPasswordText}>{showPassword ? 'Hide' : 'Show'}</Text>
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+    >
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <Text style={styles.title}>Welcome Back</Text>
+        <Text style={styles.subtitle}>Sign in to continue</Text>
+        
+        <View style={styles.inputContainer}>
+          <Text style={styles.icon}>✉️</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            placeholderTextColor="#999"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.icon}>🔒</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            placeholderTextColor="#999"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!showPassword}
+          />
+          <TouchableOpacity
+            style={styles.showPasswordButton}
+            onPress={() => setShowPassword(!showPassword)}
+          >
+            <Text style={styles.icon}>{showPassword ? '👁️' : '👁️‍🗨️'}</Text>
+          </TouchableOpacity>
+        </View>
+
+        <Text style={styles.label}>Role</Text>
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={role}
+            style={styles.picker}
+            onValueChange={(itemValue) => setRole(itemValue)}
+          >
+            <Picker.Item label="Teacher" value="Teacher" />
+            <Picker.Item label="HOD" value="HOD" />
+            <Picker.Item label="Admin" value="Admin" />
+          </Picker>
+        </View>
+
+        <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
+          <Text style={styles.signInButtonText}>Sign In</Text>
         </TouchableOpacity>
-      </View>
-      <Text style={styles.label}>Role</Text>
-      <Picker
-        selectedValue={role}
-        style={styles.picker}
-        onValueChange={(itemValue) => setRole(itemValue)}
-      >
-        <Picker.Item label="Teacher" value="Teacher" style={styles.pickerItem} />
-        <Picker.Item label="HOD" value="HOD" style={styles.pickerItem} />
-        <Picker.Item label="Admin" value="Admin" style={styles.pickerItem} />
-      </Picker>
-      <Button title="Sign In" onPress={handleSignIn} />
-    </View>
+
+        <TouchableOpacity style={styles.forgotPasswordButton}>
+          <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#F5F5F5',
+  },
+  scrollViewContent: {
+    flexGrow: 1,
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#f5f5f5',
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 10,
     textAlign: 'center',
-    color: 'black',
+    color: '#333',
   },
-  input: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    marginBottom: 20,
-    paddingHorizontal: 10,
-    backgroundColor: '#fff',
-    color: 'black',
+  subtitle: {
+    fontSize: 16,
+    marginBottom: 30,
+    textAlign: 'center',
+    color: '#666',
   },
-  passwordContainer: {
+  inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#FFF',
+    borderRadius: 8,
+    marginBottom: 15,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: '#DDD',
+  },
+  icon: {
+    marginRight: 10,
+    fontSize: 20,
+  },
+  input: {
+    flex: 1,
+    height: 50,
+    color: '#333',
+    fontSize: 16,
   },
   showPasswordButton: {
-    position: 'absolute',
-    right: 10,
     padding: 10,
-  },
-  showPasswordText: {
-    color: '#007BFF',
   },
   label: {
     fontSize: 16,
     marginBottom: 5,
-    color: 'black',
+    color: '#333',
+    fontWeight: 'bold',
+  },
+  pickerContainer: {
+    backgroundColor: '#FFF',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#DDD',
+    marginBottom: 20,
   },
   picker: {
     height: 50,
     width: '100%',
-    marginBottom: 20,
-    color: 'black', // Ensure the selected item text is black
+    color: '#333',
   },
-  pickerItem: {
-    color: 'black', // Ensure the picker items text is black
+  signInButton: {
+    backgroundColor: '#007BFF',
+    borderRadius: 8,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  signInButtonText: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  forgotPasswordButton: {
+    alignSelf: 'center',
+  },
+  forgotPasswordText: {
+    color: '#007BFF',
+    fontSize: 14,
   },
 });
 

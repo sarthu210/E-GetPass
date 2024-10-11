@@ -32,7 +32,7 @@ async function createRequest(req, res) {
             })
         }
 
-        const { EnNumber, email, name, number, tg_batch, department, role, reason } = req.body;
+        const { EnNumber, email, name, number, tg_batch, department, reason } = req.body;
 
         const request = new RequestModel({
             EnNumber,
@@ -40,7 +40,6 @@ async function createRequest(req, res) {
             name,
             number,
             department,
-            role,
             reason,
             tg_batch
         });
@@ -62,7 +61,7 @@ async function createRequest(req, res) {
 async function getAllRequest(req,res) {
     try {
         const department = req.body.department;
-
+        
         if(!department)
         {
             res.status(400).json({
