@@ -19,7 +19,7 @@ const OtherSignIn = ({ navigation }) => {
       const response = await api.post('/api/sign-in', {
         email: email,
         password: password,
-        role: role,
+        role: role
       });
 
       const user = response.data.user;

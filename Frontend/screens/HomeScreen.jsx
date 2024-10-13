@@ -39,7 +39,7 @@ const HomeScreen = ({ navigation }) => {
             <CustomButton
               title="Sign In"
               onPress={() => navigation.navigate('StudSignIn')}
-              color="#3498DB"
+              color="#2ECC71"
             />
           </View>
         )}
@@ -105,6 +105,9 @@ const styles = StyleSheet.create({
   studentOptions: {
     marginTop: 10,
     marginBottom: 15,
+    flexDirection: 'row',
+    gap: 10,
+    justifyContent: 'center'
   },
 });
 

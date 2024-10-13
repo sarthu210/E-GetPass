@@ -63,6 +63,7 @@ async function createRequest(req, res) {
 async function getAllRequest(req,res) {
     try {
         const department = req.body.department;
+        const role = req.body.role;
         
         if(!department)
         {
@@ -71,18 +72,54 @@ async function getAllRequest(req,res) {
             })
         }
 
-        const requests = await RequestModel.find({
-            department: department
-        });
-
-        if(!requests)
+        if(role === "teacher")   
         {
-            return res.status(400).json({
-                message: "Request not found"
-            })
+            const tg_batch = req?.body?.tg_batch;
+            if(!tg_batch)
+            {
+                return res.status(400).json({
+                    message: "Unable to fetch tg_batch"
+                })
+            }
+            const data = await RequestModel.find({
+                tg_batch: tg_batch
+            });
+
+            if(!data)
+            {
+                return res.status(200).json({
+                    message: "No Request Found"
+                })
+            }
+
+            return res.status(200).json({data});            
         }
 
-       return res.status(200).json({requests});
+        if(role === "hod")
+        {
+            const data = await RequestModel.find({
+                department: department,
+            });
+
+            if(!data)
+            {
+                return res.status(200).json({
+                    message: "No Request Found"
+                })
+            }
+
+            return res.status(200).json({data});            
+        }
+
+        const data = await RequestModel.find(
+            {
+                hostelApproval: false
+            } || {
+                securityApproval: false
+            }
+        )
+
+        res.status(200).json({data});
 
     } catch (error) {
         console.log(error);

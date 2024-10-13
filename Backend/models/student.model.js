@@ -5,7 +5,8 @@ import jwt from "jsonwebtoken"
 const StudentSchema = new mongoose.Schema({
     EnNumber: {
         type: String,
-        require: true
+        require: true,
+        unique: true
     },
     email: {
         type: String,
@@ -16,21 +17,28 @@ const StudentSchema = new mongoose.Schema({
         type: String,
         require: true
     },
-    number: {
+    name: {
         type: String,
         require: true
+
+    },
+    number: {
+        type: String,
+        require: true,
+        unique: true
     },
     department: {
         type: String,
         require: true
     },
-    tgName: {
+    tg_batch: {
         type: String,
         require: true
     },
     parentNumber: {
         type: String,
-        require: true
+        require: true,
+        unique: true
     },
     yearOfStudy: {
         type: String,

@@ -30,7 +30,6 @@ const StudSignIn = ({ navigation }) => {
       await AsyncStorage.setItem('user', JSON.stringify(user));
       await AsyncStorage.setItem('accessToken', JSON.stringify(response.data.accessToken));
       await AsyncStorage.setItem('refreshToken', JSON.stringify(response.data.refreshToken));
-      console.log(response.data);
 
       // Redirect to dashboard
       navigation.navigate('StudDashboard');
@@ -48,17 +47,6 @@ const StudSignIn = ({ navigation }) => {
         <Text style={styles.title}>Student Sign In</Text>
         <Text style={styles.subtitle}>Welcome back, please sign in to your account</Text>
         
-        <View style={styles.inputContainer}>
-          <Text style={styles.icon}>🔢</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enrollment Number"
-            placeholderTextColor="#999"
-            value={enNumber}
-            onChangeText={setEnNumber}
-          />
-        </View>
-
         <View style={styles.inputContainer}>
           <Text style={styles.icon}>✉️</Text>
           <TextInput
@@ -94,9 +82,6 @@ const StudSignIn = ({ navigation }) => {
           <Text style={styles.signInButtonText}>Sign In</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.forgotPasswordButton}>
-          <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-        </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
   );

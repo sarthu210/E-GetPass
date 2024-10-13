@@ -11,6 +11,10 @@ const ParentSchema = new mongoose.Schema({
         type: String,
         require: true
     },
+    name: {
+        type: String,
+        require: true
+    },
     EnNumber: {
         type: String,
         require: true

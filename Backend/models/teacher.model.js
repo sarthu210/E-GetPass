@@ -27,7 +27,7 @@ const TeacherSchema = new mongoose.Schema({
         type: String,
         default: "teacher"
     },
-    batch: {
+    tg_batch: {
         type: String,
         require: true
     },

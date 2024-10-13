@@ -16,11 +16,14 @@ function ShowRequests() {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
+        
         const response = await api.post('/api/request/get-requests', {
-          department: 'Computer Science'
+          department: user.department,
+          role: user.role,
+          tg_batch: user.tg_batch
         });
 // Make sure this is an array
-        setRequests(response.data.requests); // Set the requests data from response
+        setRequests(response.data.data); // Set the requests data from response
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -66,6 +69,7 @@ function ShowRequests() {
           <Text style={styles.info}>Name: {request.name}</Text>
           <Text style={styles.info}>Number: {request.number}</Text>
           <Text style={styles.info}>Department: {request.department}</Text>
+          <Text style={styles.info}>TG Batch: {request.tg_batch}</Text>
           <Text style={styles.info}>Reason: {request.reason}</Text>
           <Text style={styles.info}>Teacher Approval: {request.teacherApproval ? <View style={styles.approve}><Text>Approved</Text></View> : <View style={styles.unapprove}><Text>Pending</Text></View>}</Text>
           <Text style={styles.info}>HOD Approval: {request.hodApproval ? <View style={styles.approve}><Text>Approved</Text></View> : <View style={styles.unapprove}><Text>Pending</Text></View>}</Text>

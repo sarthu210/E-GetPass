@@ -5,11 +5,10 @@ import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux'; // Import hooks for Redux
 import { logout } from '../slice/userSlice'; // Import the logout action
 
-const DashboardScreen = () => {
+function DashboardScreen()  {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
-  // Access user and isAuthenticated from Redux state
   const { user, isAuthenticated } = useSelector((state) => state.auth);
 
   // Check authentication on component mount
@@ -49,7 +48,8 @@ const DashboardScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome, {user.email}!</Text>
+      <Text style={styles.title}>Welcome, {user.name}!</Text>
+      <Text style={styles.info}>Email: {user.email}</Text>
       <Text style={styles.info}>User Name: {user.name}</Text>
       <Text style={styles.info}>Department: {user.department}</Text>
       <View style={styles.Button}>
