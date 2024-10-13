@@ -8,8 +8,10 @@ async function createRequest(req, res) {
 
         const token = req.cookies?.accessToken || req.body?.accessToken;
 
+        console.log(token);
+
         if(!token){
-            req.status(400).json({
+            res.status(400).json({
                 message: "Inavlid Access Token"
             })
         }

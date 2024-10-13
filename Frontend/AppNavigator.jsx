@@ -9,6 +9,7 @@ import DashboardScreen from './screens/DashboardScreen';
 import ShowRequests from './screens/ShowRequests';
 import CreateRequest from './screens/CreateRequest';
 import StudDashboard from './screens/StudDahsboard';
+import { Provider as PaperProvider } from 'react-native-paper';
 import { Provider } from 'react-redux';
 import store from './store/store';
 
@@ -22,6 +23,7 @@ const AppNavigator = () => {
 
   return (
     <Provider store={store}>
+    <PaperProvider>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Home">
           <Stack.Screen name="Dashboard">
@@ -32,10 +34,15 @@ const AppNavigator = () => {
           <Stack.Screen name="StudSignIn" component={StudSignIn} />
           <Stack.Screen name="OtherSignIn" component={OtherSignIn} />
           <Stack.Screen name="showReq" component={ShowRequests} />
-          <Stack.Screen name="Create" component={CreateRequest} />
-          <Stack.Screen name="StudDashboard" component={StudDashboard} />
+          <Stack.Screen name="CreateRequest" component={CreateRequest} />
+          <Stack.Screen
+            name="StudDashboard"
+            component={StudDashboard}
+            options={{ headerShown: false }} // Hide the header
+          />
         </Stack.Navigator>
       </NavigationContainer>
+      </PaperProvider>
     </Provider>
   );
 };

@@ -1,198 +1,213 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Image } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, SafeAreaView } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../slice/userSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function StudDashboard() {
-  const [activeTab, setActiveTab] = useState('profile');
-  const [user, setUser] = useState({
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    id: '12345',
-    department: 'IT',
-  });
-  const [isEditing, setIsEditing] = useState(false);
-  const [gatePassRequest, setGatePassRequest] = useState({
-    reason: '',
-    date: '',
-    time: '',
-  });
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const data = useSelector((state) => state.auth.user);
+  const profile = data?.user;
 
-  const renderProfile = () => (
-    <View style={styles.section}>
-      <Image
-        source={{ uri: 'https://via.placeholder.com/150' }}
-        style={styles.profileImage}
-      />
-      <Text style={styles.name}>{user.name}</Text>
-      <Text style={styles.detail}>Email: {user.email}</Text>
-      <Text style={styles.detail}>ID: {user.id}</Text>
-      <Text style={styles.detail}>Department: {user.department}</Text>
-      <TouchableOpacity style={styles.button} onPress={() => setIsEditing(true)}>
-        <Text style={styles.buttonText}>Edit Profile</Text>
-      </TouchableOpacity>
+  const renderDetailItem = (label, value) => (
+    <View style={styles.detailItem}>
+      <Text style={styles.detailLabel}>{label}:</Text>
+      <Text style={styles.detailValue}>{value}</Text>
     </View>
   );
 
-  const renderEditProfile = () => (
-    <View style={styles.section}>
-      <TextInput
-        style={styles.input}
-        value={user.name}
-        onChangeText={(text) => setUser({ ...user, name: text })}
-        placeholder="Name"
-      />
-      <TextInput
-        style={styles.input}
-        value={user.email}
-        onChangeText={(text) => setUser({ ...user, email: text })}
-        placeholder="Email"
-      />
-      <TextInput
-        style={styles.input}
-        value={user.department}
-        onChangeText={(text) => setUser({ ...user, department: text })}
-        placeholder="Department"
-      />
-      <TouchableOpacity style={styles.button} onPress={() => setIsEditing(false)}>
-        <Text style={styles.buttonText}>Save Changes</Text>
-      </TouchableOpacity>
-    </View>
-  );
+  const handleLogout = async () => {
+    // Clear AsyncStorage
+    await AsyncStorage.removeItem('refreshToken');
+    await AsyncStorage.removeItem('user');
 
-  const renderGatePassRequest = () => (
-    <View style={styles.section}>
-      <Text style={styles.sectionTitle}>Create Gate Pass Request</Text>
-      <TextInput
-        style={styles.input}
-        value={gatePassRequest.reason}
-        onChangeText={(text) => setGatePassRequest({ ...gatePassRequest, reason: text })}
-        placeholder="Reason for Gate Pass"
-      />
-      <TextInput
-        style={styles.input}
-        value={gatePassRequest.date}
-        onChangeText={(text) => setGatePassRequest({ ...gatePassRequest, date: text })}
-        placeholder="Date (YYYY-MM-DD)"
-      />
-      <TextInput
-        style={styles.input}
-        value={gatePassRequest.time}
-        onChangeText={(text) => setGatePassRequest({ ...gatePassRequest, time: text })}
-        placeholder="Time (HH:MM)"
-      />
-      <TouchableOpacity style={styles.button} onPress={() => alert('Gate Pass Requested!')}>
-        <Text style={styles.buttonText}>Submit Request</Text>
-      </TouchableOpacity>
-    </View>
-  );
+    // Dispatch logout action
+    dispatch(logout());
+
+    // Redirect to Home
+    navigation.navigate('Home');
+  };
+
+  const handleRequestHistory = () => {
+    navigation.navigate('RequestHistory');
+  };
+
+  const handlePendingRequests = () => {
+    navigation.navigate('PendingRequests');
+  };
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>E-Gate Pass Dashboard</Text>
-      </View>
-      <View style={styles.tabContainer}>
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.header}>
+          <Text style={styles.headerText}></Text>
+        </View>
+        
+        <View style={styles.profileSection}>
+          <Image
+            source={{ uri: 'https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg' }}
+            style={styles.profileImage}
+          />
+          <Text style={styles.name}>{profile?.name || "Name"}</Text>
+          <Text style={styles.department}>{profile?.department}</Text>
+        </View>
+
+        <View style={styles.infoCard}>
+          {renderDetailItem('Email', profile?.email)}
+          {renderDetailItem('EnNumber', profile?.EnNumber)}
+          {renderDetailItem('Phone', profile?.number || 'Not provided')}
+          {renderDetailItem('TG Batch', profile?.tg_batch || 'Not assigned')}
+        </View>
+
         <TouchableOpacity
-          style={[styles.tab, activeTab === 'profile' && styles.activeTab]}
-          onPress={() => setActiveTab('profile')}
+          style={styles.createRequestButton}
+          onPress={() => navigation.navigate('CreateRequest')}
         >
-          <Text style={styles.tabText}>Profile</Text>
+          <Text style={styles.createRequestButtonText}>Create Request</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tab, activeTab === 'gatepass' && styles.activeTab]}
-          onPress={() => setActiveTab('gatepass')}
-        >
-          <Text style={styles.tabText}>Gate Pass</Text>
-        </TouchableOpacity>
-      </View>
-      {activeTab === 'profile' && (isEditing ? renderEditProfile() : renderProfile())}
-      {activeTab === 'gatepass' && renderGatePassRequest()}
-    </ScrollView>
+
+        <View style={styles.additionalButtonsContainer}>
+          <TouchableOpacity
+            style={[styles.button, styles.historyButton]}
+            onPress={handleRequestHistory}
+          >
+            <Text style={styles.buttonText}>Request History</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={[styles.button, styles.pendingButton]}
+            onPress={handlePendingRequests}
+          >
+            <Text style={styles.buttonText}>Pending Requests</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity
+            style={[styles.button, styles.logoutButton]}
+            onPress={handleLogout}
+          >
+            <Text style={styles.buttonText}>Logout</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f0f2f5',
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   header: {
-    backgroundColor: '#4a90e2',
-    padding: 20,
+    backgroundColor: '#3498db',
+    paddingVertical: 20,
     alignItems: 'center',
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
   },
   headerText: {
     color: '#ffffff',
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
   },
-  tabContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+  profileSection: {
+    alignItems: 'center',
+    marginTop: -50,
+  },
+  profileImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderWidth: 4,
+    borderColor: '#ffffff',
+  },
+  name: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginTop: 10,
+    color: '#2c3e50',
+  },
+  department: {
+    fontSize: 18,
+    color: '#7f8c8d',
+    marginTop: 5,
+  },
+  infoCard: {
     backgroundColor: '#ffffff',
-    paddingVertical: 10,
-  },
-  tab: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
-  activeTab: {
-    borderBottomWidth: 2,
-    borderBottomColor: '#4a90e2',
-  },
-  tabText: {
-    fontSize: 16,
-    color: '#333333',
-  },
-  section: {
-    backgroundColor: '#ffffff',
-    margin: 10,
+    borderRadius: 15,
     padding: 20,
-    borderRadius: 10,
+    margin: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
+  detailItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginBottom: 10,
   },
-  profileImage: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    alignSelf: 'center',
+  detailLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#34495e',
+  },
+  detailValue: {
+    fontSize: 16,
+    color: '#7f8c8d',
+  },
+  createRequestButton: {
+    backgroundColor: '#2ecc71',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 30,
+    marginHorizontal: 20,
+    marginBottom: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  createRequestButtonText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  additionalButtonsContainer: {
+    marginHorizontal: 20,
     marginBottom: 20,
   },
-  name: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-  detail: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 5,
-  },
   button: {
-    backgroundColor: '#4a90e2',
-    padding: 15,
-    borderRadius: 5,
+    paddingVertical: 15,
+    borderRadius: 30,
     alignItems: 'center',
     marginTop: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   buttonText: {
     color: '#ffffff',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
+  },
+  historyButton: {
+    backgroundColor: '#4CAF50',
+  },
+  pendingButton: {
+    backgroundColor: '#FFC107',
+  },
+  logoutButton: {
+    backgroundColor: '#F44336',
   },
 });

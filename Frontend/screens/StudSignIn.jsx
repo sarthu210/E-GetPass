@@ -25,11 +25,11 @@ const StudSignIn = ({ navigation }) => {
       });
 
       const user = response.data.user;
-      dispatch(login(user));
+      dispatch(login(response.data));
 
       await AsyncStorage.setItem('user', JSON.stringify(user));
-      await AsyncStorage.setItem('accessToken', response.data.accessToken);
-      await AsyncStorage.setItem('refreshToken', response.data.refreshToken);
+      await AsyncStorage.setItem('accessToken', JSON.stringify(response.data.accessToken));
+      await AsyncStorage.setItem('refreshToken', JSON.stringify(response.data.refreshToken));
       console.log(response.data);
 
       // Redirect to dashboard
