@@ -11,14 +11,14 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 // Clone the repository
-                git url: 'file:///C:/Users/91902/Desktop/BEProject/E-GatePass/Backend', branch: 'main' // Adjust the branch name if necessary
+                git url: 'https://github.com/sarthu210/E-GetPass.git', branch: 'main'
             }
         }
 
         stage('Install Dependencies') {
             steps {
                 // Navigate to the backend directory
-                dir('backend') {
+                dir('Backend') {
                     // Install Node.js dependencies
                     sh 'npm install'
                 }
@@ -28,7 +28,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 // Run your tests (if you have any)
-                dir('backend') {
+                dir('Backend') {
                     sh 'npm test'
                 }
             }
@@ -37,8 +37,8 @@ pipeline {
         stage('Build') {
             steps {
                 // Build your application (if applicable)
-                dir('backend') {
-                    sh 'npm run build' // Adjust this command according to your build script
+                dir('Backend') {
+                    sh 'npm run build'
                 }
             }
         }
@@ -47,8 +47,6 @@ pipeline {
             steps {
                 // Deploy your application (this will depend on your deployment strategy)
                 echo 'Deploying application...'
-                // Example: you could use scp or any other deployment command
-                // sh 'scp -r backend user@server:/path/to/deploy'
             }
         }
     }
