@@ -11,7 +11,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 // Clone the repository
-                git url: 'file:///C:/Users/91902/Dropbox/PC/Downloads/devops/backend', branch: 'main' // Adjust the branch name if necessary
+                git url: 'https://github.com/sarthu210/E-GetPass/tree/main/Backend', branch: 'main' // Adjust the branch name if necessary
             }
         }
 
