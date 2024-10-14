@@ -23,7 +23,7 @@ async function SignUp(req, res, next) {
         const { role, EnNumber, email, password, ...otherDetails } = req.body;
 
         const Model = modelsMap[role.toLowerCase()];
-        console.log(Model);
+
         if (!Model) {
             return res.status(400).json({ message: "Invalid role" });
         }
@@ -36,11 +36,7 @@ async function SignUp(req, res, next) {
             });
         }
 
-        console.log(isCheck);
-
         const hashPass = await bcrypt.hash(password, 10);
-
-        
 
         if (!isCheck) {
             const newUser = await Model.create({
@@ -51,6 +47,7 @@ async function SignUp(req, res, next) {
             });
 
             const createdUser = await Model.findById(newUser._id);
+
             if (createdUser) {
                 const accessToken = createdUser.generateAccessToken();
                 const refreshToken = createdUser.generateRefreshToken();
@@ -59,12 +56,14 @@ async function SignUp(req, res, next) {
                 createdUser.refreshToken = refreshToken;
                 await createdUser.save();
 
-                return res.status(200).json({
-                    message: "Account Created Successfully",
-                    accessToken: accessToken,
-                    refreshToken: refreshToken,
-                    user: createdUser
-                });
+                const options = {
+                    httpOnly: true,
+                    secure: true
+                };
+
+                const user = createdUser;
+
+                return res.status(200).cookie("accessToken", accessToken, options).cookie("refreshToken", refreshToken, options).json({ user, accessToken: accessToken, refreshToken: refreshToken });
             } else {
                 return res.status(400).json({
                     message: "Error Occurred While Creating Account"

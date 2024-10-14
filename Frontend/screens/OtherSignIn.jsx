@@ -16,6 +16,7 @@ const OtherSignIn = ({ navigation }) => {
 
   const handleSignIn = async () => {
     try {
+      console.log(role);
       const response = await api.post('/api/sign-in', {
         email: email,
         password: password,
@@ -84,9 +85,10 @@ const OtherSignIn = ({ navigation }) => {
             style={styles.picker}
             onValueChange={(itemValue) => setRole(itemValue)}
           >
-            <Picker.Item label="Teacher" value="Teacher" />
-            <Picker.Item label="HOD" value="HOD" />
-            <Picker.Item label="Admin" value="Admin" />
+            <Picker.Item label="Teacher" value="teacher" />
+            <Picker.Item label="HOD" value="hod" />
+            <Picker.Item label="Hostel Authority" value="hostel" />
+            <Picker.Item label="Security Guard" value="securityguard" />
           </Picker>
         </View>
 
@@ -94,9 +96,6 @@ const OtherSignIn = ({ navigation }) => {
           <Text style={styles.signInButtonText}>Sign In</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.forgotPasswordButton}>
-          <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-        </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
   );
