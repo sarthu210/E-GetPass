@@ -148,6 +148,7 @@ const SignupScreen = () => {
           style={styles.picker}
           onValueChange={(itemValue) => setDepartment(itemValue)}
         >
+          {!department && <Picker.Item label="Select Department" value="" />}
           <Picker.Item label="Computer Science" value="Computer Science" />
           <Picker.Item label="Electrical" value="Electrical" />
           <Picker.Item label="Mechanical" value="Mechanical" />
@@ -163,6 +164,7 @@ const SignupScreen = () => {
           style={styles.picker}
           onValueChange={(itemValue) => setYearOfStudy(itemValue)}
         >
+          {!yearOfStudy && <Picker.Item label="Select Year of Study" value="" />}
           <Picker.Item label="BE" value="BE" />
           <Picker.Item label="TY" value="TY" />
           <Picker.Item label="SY" value="SY" />
@@ -177,6 +179,7 @@ const SignupScreen = () => {
           style={styles.picker}
           onValueChange={(itemValue) => setTgBatch(itemValue)}
         >
+          {!tg_batch && <Picker.Item label="Select TG Batch" value="" />}
           {getTgBatchOptions().map((batch) => (
             <Picker.Item key={batch} label={batch} value={batch} />
           ))}

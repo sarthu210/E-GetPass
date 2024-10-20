@@ -16,13 +16,13 @@ function ShowRequests() {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        
+
         const response = await api.post('/api/request/get-requests', {
-          department: user.department,
-          role: user.role,
-          tg_batch: user.tg_batch
+          department: user?.department || null,
+          role: user?.role || null,
+          tg_batch: user?.tg_batch || null
         });
-// Make sure this is an array
+        // Make sure this is an array
         setRequests(response.data.data); // Set the requests data from response
         setLoading(false);
       } catch (err) {
@@ -81,34 +81,40 @@ function ShowRequests() {
             try {
               await api.post('/api/request/approve-request', {
                 requestId: request._id,
-                role : user.role
+                role: user?.role
               });
               // Refresh the requests data
               const response = await api.post('/api/request/get-requests', {
-                department: 'Computer Science'
+                department: user?.department || null,
+                role: user?.role || null,
+                tg_batch: user?.tg_batch || null
               });
-              setRequests(response.data.requests); // Set the requests data from response
+              setRequests(response.data.data);
+              setLoading(false) // Set the requests data from response
             } catch (err) {
               setError(err.message);
             }
-          } } />
+          }} />
         </View>
       ))}
       <View style={styles.Button}>
-      <Button style={styles.Button} title="Refresh Data" onPress={async () => {
-            try {
-        const response = await api.post('/api/request/get-requests', {
-          department: 'Computer Science'
-        });
-        setRequests(response.data.requests); // Set the requests data from response
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
-      }
+        <Button style={styles.Button} title="Refresh Data" onPress={async () => {
+          try {
+            console.log("role", user?.tg_batch);
+            const response = await api.post('/api/request/get-requests', {
+              department: user?.department || null,
+              role: user?.role || null,
+              tg_batch: user?.tg_batch || null
+            });
+            setRequests(response.data.data); // Set the requests data from response
+            setLoading(false);
+          } catch (err) {
+            setError(err.message);
+            setLoading(false);
+          }
         }} />
       </View>
-      
+
     </ScrollView>
   );
 };

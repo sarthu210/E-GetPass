@@ -146,28 +146,44 @@ async function RequestApproval(req,res) {
         if(role == "hod")
         {
             request.hodApproval = true;
+            await request.save();
+
+            return res.status(200).json({
+                message: "Request Approved Successfully"
+            })  
+            
         }
 
         if(role == "teacher")
         {
             request.teacherApproval = true;
+            await request.save();
+
+            return res.status(200).json({
+                message: "Request Approved Successfully"
+            }) 
         }
 
         if(role == "securityguard")
         {
             request.securityApproval = true;
+            await request.save();
+
+            return res.status(200).json({
+                message: "Request Approved Successfully"
+            }) 
         }
 
         if(role === "hostel")
         {
             request.hostelApproval = true;
+            await request.save();
+
+            return res.status(200).json({
+                message: "Request Approved Successfully"
+            }) 
         }
-
-        await request.save();
-
-        return res.status(200).json({
-            message: "Request Approved Successfully"
-        })    
+   
 
     } catch (error) {
         console.log(error);
