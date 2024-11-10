@@ -73,19 +73,30 @@ function DashboardScreen() {
             style={[styles.button, styles.showRequestsButton]}
             onPress={() => navigation.navigate('showReq')}
           >
-            <Text style={styles.buttonText}>Show Requests</Text>
+            <Text style={styles.buttonText}>Show unapproved Requests</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.button, styles.approvedRequestsButton]}
-            onPress={() => navigation.navigate('showReq')}
+            style={[styles.button, styles.showRequestsButton]}
+            onPress={() => navigation.navigate('Approved')}
           >
             <Text style={styles.buttonText}>Approved Requests</Text>
           </TouchableOpacity>
+          
         </View>
-
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.buttonText}>Logout</Text>
-        </TouchableOpacity>
+        <View>
+          <TouchableOpacity
+            style={[styles.button, styles.showRequestsButton]}
+            onPress={() => navigation.navigate('RequestByStudent')}
+          >
+            <Text style={styles.buttonText}>Request Data Per Student</Text>
+          </TouchableOpacity>
+        </View>
+        <View>
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+            <Text style={styles.buttonText}>Logout</Text>
+          </TouchableOpacity>
+        </View>
+        
       </ScrollView>
     </SafeAreaView>
   );
@@ -176,11 +187,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#e74c3c',
     padding: 15,
     borderRadius: 10,
+    marginTop: 10
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet, ScrollView } from 'react-native';
+import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../utils/api';
 
-function ShowRequests() {
+function ApprovedRequests() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -19,18 +20,7 @@ function ShowRequests() {
           role: user?.role || null,
           tg_batch: user?.tg_batch || null
         });
-        const allRequests = response.data.data;
-
-        // Filter requests based on user role to show only unapproved requests
-        const filteredRequests = allRequests.filter(request => {
-          if (user?.role === 'teacher') return !request.teacherApproval;
-          if (user?.role === 'hod') return !request.hodApproval;
-          if (user?.role === 'hostel') return !request.hostelApproval;
-          if (user?.role === 'security') return !request.securityApproval;
-          return true;
-        });
-
-        setRequests(filteredRequests);
+        setRequests(response.data.data);
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -39,7 +29,22 @@ function ShowRequests() {
     };
 
     fetchRequests();
-  }, [user]);
+  }, []);
+
+  const filterRequestsByRoleApproval = (request) => {
+    switch (user?.role) {
+      case 'teacher':
+        return request.teacherApproval;
+      case 'hod':
+        return request.hodApproval;
+      case 'hostel':
+        return request.hostelApproval;
+      case 'security':
+        return request.securityApproval;
+      default:
+        return true;
+    }
+  };
 
   if (loading) {
     return (
@@ -57,18 +62,28 @@ function ShowRequests() {
     );
   }
 
-  if (!Array.isArray(requests) || requests.length === 0) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.title}>No pending requests found</Text>
-      </View>
-    );
-  }
+  const handleApprovalToggle = async (request) => {
+    try {
+      await api.post('/api/request/approve-request', {
+        requestId: request._id,
+        role: user?.role
+      });
+      const response = await api.post('/api/request/get-requests', {
+        department: user?.department || null,
+        role: user?.role || null,
+        tg_batch: user?.tg_batch || null
+      });
+      setRequests(response.data.data);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Gate Pass Requests</Text>
-      {requests.map((request) => (
+
+      {requests.filter(filterRequestsByRoleApproval).map((request) => (
         <View key={request._id} style={styles.requestContainer}>
           <Text style={styles.info}>Enrollment Number: {request.EnNumber}</Text>
           <Text style={styles.info}>Email: {request.email}</Text>
@@ -83,31 +98,10 @@ function ShowRequests() {
           <Text style={styles.info}>Security Approval: {request.securityApproval ? <View style={styles.approve}><Text>Approved</Text></View> : <View style={styles.unapprove}><Text>Pending</Text></View>}</Text>
           <Text style={styles.info}>Message Sent: {request.isMessageSend ? 'Yes' : 'No'}</Text>
           <Text style={styles.info}>Date: {new Date(request.date).toLocaleString()}</Text>
-          <Button title="Unapprove" onPress={async () => {
-            try {
-              await api.post('/api/request/approve-request', {
-                requestId: request._id,
-                role: user?.role
-              });
-              const response = await api.post('/api/request/get-requests', {
-                department: user?.department || null,
-                role: user?.role || null,
-                tg_batch: user?.tg_batch || null
-              });
-              setRequests(response.data.data.filter(req => {
-                if (user?.role === 'teacher') return !req.teacherApproval;
-                if (user?.role === 'hod') return !req.hodApproval;
-                if (user?.role === 'hostel') return !req.hostelApproval;
-                if (user?.role === 'security') return !req.securityApproval;
-                return true;
-              }));
-              setLoading(false);
-            } catch (err) {
-              setError(err.message);
-            }
-          }} />
+          <Button title="Unapprove" onPress={() => handleApprovalToggle(request)} />
         </View>
       ))}
+
       <View style={styles.Button}>
         <Button title="Refresh Data" onPress={async () => {
           try {
@@ -116,13 +110,7 @@ function ShowRequests() {
               role: user?.role || null,
               tg_batch: user?.tg_batch || null
             });
-            setRequests(response.data.data.filter(req => {
-              if (user?.role === 'teacher') return !req.teacherApproval;
-              if (user?.role === 'hod') return !req.hodApproval;
-              if (user?.role === 'hostel') return !req.hostelApproval;
-              if (user?.role === 'security') return !req.securityApproval;
-              return true;
-            }));
+            setRequests(response.data.data);
             setLoading(false);
           } catch (err) {
             setError(err.message);
@@ -132,7 +120,7 @@ function ShowRequests() {
       </View>
     </ScrollView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -180,4 +168,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ShowRequests;
+export default ApprovedRequests;
