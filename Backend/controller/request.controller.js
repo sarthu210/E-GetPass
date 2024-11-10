@@ -65,15 +65,16 @@ async function getAllRequest(req,res) {
         const department = req.body.department;
         const role = req.body.role;
         
-        if(!department)
-        {
-            res.status(400).json({
-                message: "Unable to fetch department"
-            })
-        }
+        
 
         if(role === "teacher")   
         {
+            if(!department)
+                {
+                    res.status(400).json({
+                        message: "Unable to fetch department"
+                    })
+                }
             const tg_batch = req?.body?.tg_batch;
             if(!tg_batch)
             {
@@ -97,6 +98,12 @@ async function getAllRequest(req,res) {
 
         if(role === "hod")
         {
+            if(!department)
+            {
+                res.status(400).json({
+                    message: "Unable to fetch department"
+                })
+            }
             const data = await RequestModel.find({
                 department: department,
             });
@@ -111,13 +118,11 @@ async function getAllRequest(req,res) {
             return res.status(200).json({data});            
         }
 
-        const data = await RequestModel.find(
-            {
-                hostelApproval: false
-            } || {
-                securityApproval: false
-            }
-        )
+
+        const data = await RequestModel.find({
+            hodApproval: true,
+            teacherApproval: true,
+        })
 
         res.status(200).json({data});
 

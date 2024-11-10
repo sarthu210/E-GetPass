@@ -30,6 +30,15 @@ async function SignUp(req, res, next) {
 
         const isCheck = await Model.findOne({ email: email });
 
+        if(role === "student"){
+            const isEnNumber = await Model.findOne({ EnNumber: EnNumber });
+            if(isEnNumber){
+                return res.status(400).json({
+                    message: "Enrollment Number Already Exists"
+                });
+            }
+        }
+
         if(isCheck){
             return res.status(400).json({
                 message: "User Already Exists"

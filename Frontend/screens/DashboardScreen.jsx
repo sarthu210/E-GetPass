@@ -49,7 +49,7 @@ function DashboardScreen() {
           />
           <View style={styles.headerText}>
             <Text style={styles.title}>Welcome, {user.name}!</Text>
-            <Text style={styles.subtitle}>{user.department}</Text>
+            {user.role === "hostel" ? null : <Text style={styles.subtitle}>{user.department}</Text>}
           </View>
         </View>
 
@@ -62,10 +62,11 @@ function DashboardScreen() {
             <Text style={styles.infoLabel}>Name:</Text>
             <Text style={styles.infoText}>{user.name}</Text>
           </View>
-          <View style={styles.infoItem}>
+          {user.role === "hostel" ? null : <View style={styles.infoItem}>
             <Text style={styles.infoLabel}>Department:</Text>
             <Text style={styles.infoText}>{user.department}</Text>
           </View>
+          }
         </View>
 
         <View style={styles.buttonContainer}>
@@ -81,7 +82,7 @@ function DashboardScreen() {
           >
             <Text style={styles.buttonText}>Approved Requests</Text>
           </TouchableOpacity>
-          
+
         </View>
         <View>
           <TouchableOpacity
@@ -96,7 +97,7 @@ function DashboardScreen() {
             <Text style={styles.buttonText}>Logout</Text>
           </TouchableOpacity>
         </View>
-        
+
       </ScrollView>
     </SafeAreaView>
   );

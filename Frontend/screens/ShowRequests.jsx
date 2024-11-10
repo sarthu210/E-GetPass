@@ -83,7 +83,7 @@ function ShowRequests() {
           <Text style={styles.info}>Security Approval: {request.securityApproval ? <View style={styles.approve}><Text>Approved</Text></View> : <View style={styles.unapprove}><Text>Pending</Text></View>}</Text>
           <Text style={styles.info}>Message Sent: {request.isMessageSend ? 'Yes' : 'No'}</Text>
           <Text style={styles.info}>Date: {new Date(request.date).toLocaleString()}</Text>
-          <Button title="Unapprove" onPress={async () => {
+          <Button title="Approve" onPress={async () => {
             try {
               await api.post('/api/request/approve-request', {
                 requestId: request._id,
