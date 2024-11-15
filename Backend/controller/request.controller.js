@@ -199,4 +199,70 @@ async function RequestApproval(req,res) {
     }
 }
 
-export { createRequest, getAllRequest, RequestApproval };
+async function RequestUnapproved(req,res) {
+    try {
+        const requestId = req.body.requestId;
+        const role = req.body.role;
+
+        const request = await RequestModel.findById(requestId);
+
+        if(!request)
+        {
+            return res.status(400).json({
+                message: "Request not found"
+            })
+        }
+
+        if(role == "hod")
+        {
+            request.hodApproval = false;
+            await request.save();
+
+            return res.status(200).json({
+                message: "Request Unpproved Successfully"
+            })  
+            
+        }
+
+        if(role == "teacher")
+        {
+            request.teacherApproval = false;
+            await request.save();
+
+            return res.status(200).json({
+                message: "Request Unapproved Successfully"
+            }) 
+        }
+
+        if(role == "securityguard")
+        {
+            request.securityApproval = false;
+            await request.save();
+
+            return res.status(200).json({
+                message: "Request Unapproved Successfully"
+            }) 
+        }
+
+        if(role === "hostel")
+        {
+            request.hostelApproval = false;
+            await request.save();
+
+            return res.status(200).json({
+                message: "Request Unapproved Successfully"
+            }) 
+        }
+   
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Internal Server Error"
+        })
+        
+    }
+    
+}
+
+export { createRequest, getAllRequest, RequestApproval, RequestUnapproved };
