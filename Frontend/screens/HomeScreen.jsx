@@ -18,7 +18,7 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      
+      <Image source={{uri: "https://media-private.canva.com/Xp_XI/MAGEWyXp_XI/1/s.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJWF6QO3UH4PAAJ6Q%2F20241120%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20241120T120711Z&X-Amz-Expires=93603&X-Amz-Signature=208a7f17d3fe07aa52da927a80e338d34bc7918430e4fd6e06de7be103093e70&X-Amz-SignedHeaders=host%3Bx-amz-expected-bucket-owner&response-expires=Thu%2C%2021%20Nov%202024%2014%3A07%3A14%20GMT"}} style = {styles.Image} />
       <Text style={styles.title}>Welcome to E-Gate Pass</Text>
       <Text style={styles.subtitle}>Choose your role to continue</Text>
       
@@ -108,6 +108,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     justifyContent: 'center'
+  },
+  Image: {
+    width: 120,
+    height: 120,
+    marginBottom: 20,
+    borderRadius: 60,
   },
 });
 

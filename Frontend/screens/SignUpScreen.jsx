@@ -54,8 +54,42 @@ const SignupScreen = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
+  const validateInputs = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const enNumberRegex = /^EN\d{8}$/i;
+    const mobileRegex = /^\d{10}$/;
+
+    if (!emailRegex.test(email)) {
+      Alert.alert('Validation Error', 'Please enter a valid email address.');
+      return false;
+    }
+
+    if (!enNumberRegex.test(enNumber)) {
+      Alert.alert('Validation Error', 'Enrollment Number must start with "EN" followed by 8 digits.');
+      return false;
+    }
+
+    if (!mobileRegex.test(number)) {
+      Alert.alert('Validation Error', 'Phone number must be 10 digits.');
+      return false;
+    }
+
+    if (!mobileRegex.test(parentNumber)) {
+      Alert.alert('Validation Error', "Parent's phone number must be 10 digits.");
+      return false;
+    }
+
+    if (!department || !yearOfStudy || !tg_batch) {
+      Alert.alert('Validation Error', 'Please select all dropdown values.');
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSignup = async () => {
-    console.log(enNumber, email, password, name, number, department, tg_batch, parentNumber, yearOfStudy);
+    if (!validateInputs()) return;
+
     try {
       const response = await api.post('/api/sign-up', {
         role: 'student',
@@ -94,7 +128,7 @@ const SignupScreen = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Student Signup</Text>
-      
+
       <Text style={styles.label}>Enrollment Number</Text>
       <TextInput
         style={styles.input}
@@ -103,7 +137,7 @@ const SignupScreen = () => {
         value={enNumber}
         onChangeText={setEnNumber}
       />
-      
+
       <Text style={styles.label}>Email</Text>
       <TextInput
         style={styles.input}
@@ -112,7 +146,7 @@ const SignupScreen = () => {
         value={email}
         onChangeText={setEmail}
       />
-      
+
       <Text style={styles.label}>Password</Text>
       <TextInput
         style={styles.input}
@@ -131,7 +165,7 @@ const SignupScreen = () => {
         value={name}
         onChangeText={setName}
       />
-      
+
       <Text style={styles.label}>Phone Number</Text>
       <TextInput
         style={styles.input}
@@ -140,7 +174,7 @@ const SignupScreen = () => {
         value={number}
         onChangeText={setNumber}
       />
-      
+
       <Text style={styles.label}>Department</Text>
       <View style={styles.pickerContainer}>
         <Picker
@@ -156,7 +190,7 @@ const SignupScreen = () => {
           <Picker.Item label="Electronics And Telecomunication" value="Electronics And Telecomunication" />
         </Picker>
       </View>
-      
+
       <Text style={styles.label}>Year of Study</Text>
       <View style={styles.pickerContainer}>
         <Picker
@@ -171,7 +205,7 @@ const SignupScreen = () => {
           <Picker.Item label="FY" value="FY" />
         </Picker>
       </View>
-      
+
       <Text style={styles.label}>Select TG_Batch</Text>
       <View style={styles.pickerContainer}>
         <Picker
@@ -185,7 +219,7 @@ const SignupScreen = () => {
           ))}
         </Picker>
       </View>
-      
+
       <Text style={styles.label}>Parent's Phone Number</Text>
       <TextInput
         style={styles.input}
@@ -194,12 +228,11 @@ const SignupScreen = () => {
         value={parentNumber}
         onChangeText={setParentNumber}
       />
-      
-      <Button title="Sign Up" onPress={handleSignup} />
+
+      <Button title="Signup" onPress={handleSignup} />
     </ScrollView>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,

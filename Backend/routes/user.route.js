@@ -10,7 +10,7 @@ const routes = new Router();
 routes.post('/sign-up', SignUp);
 routes.post('/sign-in', LogIn);
 routes.post('/refresh-token', refreshAccessToke);
-routes.get('/user',verifyHandler, getUser);
+routes.get('/user', getUser);
 
 export default routes;
 

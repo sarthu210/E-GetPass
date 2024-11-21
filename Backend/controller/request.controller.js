@@ -265,4 +265,30 @@ async function RequestUnapproved(req,res) {
     
 }
 
+async function RequestPerStud(req,res){
+    try {
+        const EnNumber = req.body.EnNumber;
+
+        const data = await RequestModel.find({
+            EnNumber: EnNumber
+        })
+
+        if(!data)
+        {
+            return res.status(200).json({
+                message: "No Request Found"
+            })
+        }
+
+        return res.status(200).json({data}, {message: "Request Found"});
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Internal Server Error"
+        })
+        
+    }
+}
+
 export { createRequest, getAllRequest, RequestApproval, RequestUnapproved };

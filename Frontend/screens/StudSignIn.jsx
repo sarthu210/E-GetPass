@@ -31,7 +31,6 @@ const StudSignIn = ({ navigation }) => {
       await AsyncStorage.setItem('accessToken', JSON.stringify(response.data.accessToken));
       await AsyncStorage.setItem('refreshToken', JSON.stringify(response.data.refreshToken));
 
-      // Redirect to dashboard
       navigation.navigate('StudDashboard');
     } catch (error) {
       Alert.alert('Sign In Failed', error.response?.data?.message || 'An error occurred');

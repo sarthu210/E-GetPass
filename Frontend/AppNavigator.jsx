@@ -5,50 +5,54 @@ import SignupScreen from './screens/SignUpScreen'; // Adjust the path as necessa
 import HomeScreen from './screens/HomeScreen';
 import StudSignIn from './screens/StudSignIn';
 import OtherSignIn from './screens/OtherSignIn';
-import DashboardScreen from './screens/DashboardScreen'; 
+import DashboardScreen from './screens/DashboardScreen';
 import ShowRequests from './screens/ShowRequests';
 import CreateRequest from './screens/CreateRequest';
 import StudDashboard from './screens/StudDahsboard';
 import ApprovedRequests from './screens/ApprovedRequests';
 import RequestByStudent from './screens/RequestsByStudents';
 import { Provider as PaperProvider } from 'react-native-paper';
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import store from './store/store';
 
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
-  const handleLogout = async () => {
-    await AsyncStorage.removeItem('refreshToken');
-    await AsyncStorage.removeItem('user');
-  };
+  const {isAuthenticated, user} = useSelector((state) => state.auth);
+  
+  const AuthenticatedStack = () => (
+    <Stack.Navigator initialRouteName={user?.user?.role === "student" ? "StudDashboard" : "Dashboard"}>
+      <Stack.Screen name="StudDashboard" component={StudDashboard} options={{headerShown: false}} />
+      <Stack.Screen name="Dashboard" component={DashboardScreen} />
+      <Stack.Screen name="showReq" component={ShowRequests} />
+      <Stack.Screen name="Approved" component={ApprovedRequests} />
+      <Stack.Screen name="RequestByStudent" component={RequestByStudent} />
+      <Stack.Screen name="CreateRequest" component={CreateRequest} />
+    </Stack.Navigator>
+  );
+
+  const UnauthenticatedStack = () => (
+    <Stack.Navigator initialRouteName="Home">
+      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="Signup" component={SignupScreen} />
+      <Stack.Screen name="StudSignIn" component={StudSignIn} />
+      <Stack.Screen name="OtherSignIn" component={OtherSignIn} />
+    </Stack.Navigator>
+  );
 
   return (
-    <Provider store={store}>
-    <PaperProvider>
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home">
-          <Stack.Screen name="Dashboard">
-            {props => <DashboardScreen {...props} onLogout={handleLogout} />}
-          </Stack.Screen>
-          <Stack.Screen name="Home" component={HomeScreen} />
-          <Stack.Screen name="Signup" component={SignupScreen} />
-          <Stack.Screen name="StudSignIn" component={StudSignIn} />
-          <Stack.Screen name="OtherSignIn" component={OtherSignIn} />
-          <Stack.Screen name="showReq" component={ShowRequests} />
-          <Stack.Screen name="Approved" component={ApprovedRequests} />
-          <Stack.Screen name="RequestByStudent" component={RequestByStudent} />
-          <Stack.Screen name="CreateRequest" component={CreateRequest} />
-          <Stack.Screen
-            name="StudDashboard"
-            component={StudDashboard}
-            options={{ headerShown: false }} // Hide the header
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-      </PaperProvider>
-    </Provider>
+    <NavigationContainer>
+      {isAuthenticated ? <AuthenticatedStack /> : <UnauthenticatedStack />}
+    </NavigationContainer>
   );
 };
 
-export default AppNavigator;
+const App = () => (
+  <Provider store={store}>
+    <PaperProvider>
+      <AppNavigator />
+    </PaperProvider>
+  </Provider>
+);
+
+export default App;
