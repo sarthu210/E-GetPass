@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import modelsMap from "../models/modelMap.js";
 import jwt from "jsonwebtoken";
+import { StudModel } from "../models/student.model.js";
 
 async function generateAccessTokenAndRefreshToken(userId, Model) {
     try {
@@ -236,5 +237,75 @@ async function refreshAccessToke (req, res) {
 
 }
 
+async function getStudents(req,res) {
+    try {
+        const department = req.body.department;
+        const role = req.body.role;
+        
+        if(role === "teacher")   
+        {
+            if(!department)
+                {
+                    res.status(400).json({
+                        message: "Unable to fetch department"
+                    })
+                }
+            const tg_batch = req?.body?.tg_batch;
+            if(!tg_batch)
+            {
+                return res.status(400).json({
+                    message: "Unable to fetch tg_batch"
+                })
+            }
+            const data = await StudModel.find({
+                tg_batch: tg_batch
+            });
 
-export { SignUp, LogIn, getUser, refreshAccessToke };
+            if(!data)
+            {
+                return res.status(200).json({
+                    message: "No Request Found"
+                })
+            }
+
+            return res.status(200).json({data});            
+        }
+
+        if(role === "hod")
+        {
+            if(!department)
+            {
+                res.status(400).json({
+                    message: "Unable to fetch department"
+                })
+            }
+            const data = await StudModel.find({
+                department: department,
+            });
+
+            if(!data)
+            {
+                return res.status(200).json({
+                    message: "No Request Found"
+                })
+            }
+
+            return res.status(200).json({data});            
+        }
+
+
+        const data = await StudModel.find({
+            role: "student"
+        })
+
+        res.status(200).json({data});
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Internal Server Error"
+        })
+    }
+}
+
+export { SignUp, LogIn, getUser, refreshAccessToke, getStudents };

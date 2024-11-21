@@ -268,7 +268,6 @@ async function RequestUnapproved(req,res) {
 async function RequestPerStud(req,res){
     try {
         const EnNumber = req.body.EnNumber;
-
         const data = await RequestModel.find({
             EnNumber: EnNumber
         })
@@ -280,7 +279,7 @@ async function RequestPerStud(req,res){
             })
         }
 
-        return res.status(200).json({data}, {message: "Request Found"});
+        return res.status(200).json({data});
 
     } catch (error) {
         console.log(error);
@@ -291,4 +290,4 @@ async function RequestPerStud(req,res){
     }
 }
 
-export { createRequest, getAllRequest, RequestApproval, RequestUnapproved };
+export { createRequest, getAllRequest, RequestApproval, RequestUnapproved, RequestPerStud };

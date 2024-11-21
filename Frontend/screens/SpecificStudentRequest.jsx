@@ -12,7 +12,7 @@ function SpecificStudentRequest({ route }) {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const response = await api.post('/api/request/get-requests-by-enrollment', { EnNumber });
+        const response = await api.post('/api/request/get-requests-by-enrollment', { EnNumber: EnNumber });
         setRequests(response.data.data); // Assuming data contains list of requests for the student
         setLoading(false);
       } catch (err) {

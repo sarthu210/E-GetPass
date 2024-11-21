@@ -14,7 +14,7 @@ function RequestByStudent() {
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await api.post('/api/request/get-requests', {
+        const response = await api.post('/api/get-stud', {
             department: user?.department || null,
             role: user?.role || null,
             tg_batch: user?.tg_batch || null})

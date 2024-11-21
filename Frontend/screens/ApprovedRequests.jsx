@@ -64,7 +64,7 @@ function ApprovedRequests() {
 
   const handleApprovalToggle = async (request) => {
     try {
-      await api.post('/api/request/approve-request', {
+      await api.post('/api/request/unapprove-request', {
         requestId: request._id,
         role: user?.role
       });
