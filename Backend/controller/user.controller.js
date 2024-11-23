@@ -2,7 +2,9 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import modelsMap from "../models/modelMap.js";
 import jwt from "jsonwebtoken";
-import { StudModel } from "../models/student.model.js";
+import { OTPModel } from "../models/otp.model.js";
+import { sendOTPEmail } from "../middleware/mail.middleware.js";
+import { StudModel } from "../models/student.model.js";0
 
 async function generateAccessTokenAndRefreshToken(userId, Model) {
     try {
@@ -308,4 +310,94 @@ async function getStudents(req,res) {
     }
 }
 
-export { SignUp, LogIn, getUser, refreshAccessToke, getStudents };
+async function SendOtp(req, res){
+    try {
+        const { email } = req.body;
+
+        const user = await StudModel.findOne({ email: email });
+
+        if(user){
+            return res.status(400).json({
+                message: "User Already Exists"
+            });
+        }
+
+        const otp = await OTPModel.findOne({ email: email });
+
+        if(!otp){
+            const Newotp = await sendOTPEmail(email);
+            await OTPModel.create({
+                email: email,
+                otp: Newotp,
+                createdAt: Date.now()
+            });
+       
+            return res.status(200).json({
+                message: "OTP Sent Successfully"
+            });
+        }
+
+        if (otp) {
+            const otpTime = new Date(otp.createdAt).getTime(); // Convert createdAt to timestamp
+            const currentTime = Date.now(); // Get current timestamp
+
+            // Check if 10 minutes (600,000 milliseconds) have passed
+            if (currentTime - otpTime < 600000) { // 10 minutes
+                return res.status(200).json({
+                    message: "OTP Already Sent. Please wait for 10 minutes before requesting a new one.",
+                });
+            }
+        }
+
+
+        const Newotp = await sendOTPEmail(email);
+        otp.otp = Newotp;
+        otp.createdAt = Date.now();
+        await otp.save();
+
+        return res.status(200).json({
+            message: "OTP Sent Successfully"
+        });
+
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Internal Server Error"
+        })
+        
+    }
+}
+
+async function VerifyOtp(req, res){
+    try {
+        const { email, otp } = req.body;
+
+        const otpData = await OTPModel.findOne({ email: email });
+
+        if(!otpData){
+            return res.status(400).json({
+                message: "OTP Not Found"
+            });
+        }
+
+        if(otpData.otp !== otp){
+            return res.status(400).json({
+                message: "Invalid OTP"
+            });
+        }
+
+        return res.status(200).json({
+            message: "OTP Verified Successfully"
+        });
+
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            message: "Internal Server Error"
+        })
+    }
+}
+
+export { SignUp, LogIn, getUser, refreshAccessToke, getStudents, SendOtp, VerifyOtp };

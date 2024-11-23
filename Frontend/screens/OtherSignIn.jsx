@@ -89,6 +89,7 @@ const OtherSignIn = ({ navigation }) => {
             <Picker.Item label="HOD" value="hod" />
             <Picker.Item label="Hostel Authority" value="hostel" />
             <Picker.Item label="Security Guard" value="securityguard" />
+            <Picker.Item label="Parent" value="parent" />
           </Picker>
         </View>
 

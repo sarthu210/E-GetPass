@@ -12,6 +12,8 @@ import StudDashboard from './screens/StudDahsboard';
 import ApprovedRequests from './screens/ApprovedRequests';
 import RequestByStudent from './screens/RequestsByStudents';
 import SpecificStudentRequest from './screens/SpecificStudentRequest';
+import ReqStudHistory from './screens/ReqStudHistory';
+import PendingReqStud from './screens/PendingReqStud';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { Provider, useSelector } from 'react-redux';
 import store from './store/store';
@@ -30,6 +32,8 @@ const AppNavigator = () => {
       <Stack.Screen name="RequestByStudent" component={RequestByStudent} />
       <Stack.Screen name="CreateRequest" component={CreateRequest} />
       <Stack.Screen name="StudentRequests" component={SpecificStudentRequest} />
+      <Stack.Screen name="ReqStudHistory" component={ReqStudHistory} />
+      <Stack.Screen name="PendingReqStud" component={PendingReqStud} />
     </Stack.Navigator>
   );
 

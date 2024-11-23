@@ -71,14 +71,14 @@ export default function StudDashboard() {
         <View style={styles.additionalButtonsContainer}>
           <TouchableOpacity
             style={[styles.button, styles.historyButton]}
-            onPress={handleRequestHistory}
+            onPress={() => navigation.navigate('ReqStudHistory')}
           >
             <Text style={styles.buttonText}>Request History</Text>
           </TouchableOpacity>
           
           <TouchableOpacity
             style={[styles.button, styles.pendingButton]}
-            onPress={handlePendingRequests}
+            onPress={() => navigation.navigate('PendingReqStud')}
           >
             <Text style={styles.buttonText}>Pending Requests</Text>
           </TouchableOpacity>

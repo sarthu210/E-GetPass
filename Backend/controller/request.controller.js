@@ -1,6 +1,7 @@
 import { RequestModel } from "../models/request.model.js";
 import { StudModel } from "../models/student.model.js";
 import jwt from "jsonwebtoken";
+import { sendNotificationEmail } from "../middleware/mail.middleware.js";
 import modelsMap from "../models/modelMap.js";
 
 async function createRequest(req, res) {
@@ -163,7 +164,7 @@ async function RequestApproval(req,res) {
         {
             request.teacherApproval = true;
             await request.save();
-
+            await sendNotificationEmail(request.email, "Your Request has been approved by the teacher");
             return res.status(200).json({
                 message: "Request Approved Successfully"
             }) 

@@ -39,7 +39,7 @@ function ApprovedRequests() {
         return request.hodApproval;
       case 'hostel':
         return request.hostelApproval;
-      case 'security':
+      case 'securityguard':
         return request.securityApproval;
       default:
         return true;

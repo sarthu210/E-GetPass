@@ -26,7 +26,7 @@ function ShowRequests() {
           if (user?.role === 'teacher') return !request.teacherApproval;
           if (user?.role === 'hod') return !request.hodApproval;
           if (user?.role === 'hostel') return !request.hostelApproval;
-          if (user?.role === 'security') return !request.securityApproval;
+          if (user?.role === 'securityguard') return !request.securityApproval;
           return true;
         });
 

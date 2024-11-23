@@ -50,6 +50,9 @@ const SignupScreen = () => {
   const [tg_batch, setTgBatch] = useState('');
   const [parentNumber, setParentNumber] = useState('');
   const [yearOfStudy, setYearOfStudy] = useState('');
+  const [otp, setOtp] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
 
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -87,8 +90,46 @@ const SignupScreen = () => {
     return true;
   };
 
+  const handleSendOtp = async () => {
+    if (!email) {
+      Alert.alert('Validation Error', 'Please enter a valid email address.');
+      return;
+    }
+
+    try {
+      const response = await api.post('/api/send-otp', { email });
+      if (response.data.message) {
+        setOtpSent(true);
+        Alert.alert(response.data.message);
+      }
+    } catch (error) {
+      Alert.alert('OTP Send Failed', error.response?.data?.message || 'An error occurred');
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (!otp) {
+      Alert.alert('Validation Error', 'Please enter the OTP.');
+      return;
+    }
+
+    try {
+      const response = await api.post('/api/verify-otp', { email, otp });
+      if (response.data.message) {
+        setOtpVerified(true);
+        Alert.alert('OTP Verified', 'Your email has been verified. You can now complete the signup process.');
+      }
+    } catch (error) {
+      Alert.alert('OTP Verification Failed', error.response?.data?.message || 'An error occurred');
+    }
+  };
+
   const handleSignup = async () => {
     if (!validateInputs()) return;
+    if (!otpVerified) {
+      Alert.alert('Verification Required', 'Please verify your email with OTP before signing up.');
+      return;
+    }
 
     try {
       const response = await api.post('/api/sign-up', {
@@ -129,110 +170,137 @@ const SignupScreen = () => {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Student Signup</Text>
 
-      <Text style={styles.label}>Enrollment Number</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Enrollment Number"
-        placeholderTextColor="#999"
-        value={enNumber}
-        onChangeText={setEnNumber}
-      />
-
       <Text style={styles.label}>Email</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Email"
-        placeholderTextColor="#999"
-        value={email}
-        onChangeText={setEmail}
-      />
-
-      <Text style={styles.label}>Password</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Password"
-        placeholderTextColor="#999"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-
-      <Text style={styles.label}>Name</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Name"
-        placeholderTextColor="#999"
-        value={name}
-        onChangeText={setName}
-      />
-
-      <Text style={styles.label}>Phone Number</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Phone Number"
-        placeholderTextColor="#999"
-        value={number}
-        onChangeText={setNumber}
-      />
-
-      <Text style={styles.label}>Department</Text>
-      <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={department}
-          style={styles.picker}
-          onValueChange={(itemValue) => setDepartment(itemValue)}
-        >
-          {!department && <Picker.Item label="Select Department" value="" />}
-          <Picker.Item label="Computer Science" value="Computer Science" />
-          <Picker.Item label="Electrical" value="Electrical" />
-          <Picker.Item label="Mechanical" value="Mechanical" />
-          <Picker.Item label="Civil" value="Civil" />
-          <Picker.Item label="Electronics And Telecomunication" value="Electronics And Telecomunication" />
-        </Picker>
+      <View style={styles.emailContainer}>
+        <TextInput
+          style={[styles.input, styles.emailInput, otpVerified && styles.disabledInput]}
+          placeholder="Enter Email"
+          placeholderTextColor="#999"
+          value={email}
+          onChangeText={setEmail}
+          editable={!otpVerified}
+        />
+        {otpVerified && (
+          <View style={styles.verifiedBadge}>
+            <Text style={styles.verifiedText}>✓ Verified</Text>
+          </View>
+        )}
       </View>
 
-      <Text style={styles.label}>Year of Study</Text>
-      <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={yearOfStudy}
-          style={styles.picker}
-          onValueChange={(itemValue) => setYearOfStudy(itemValue)}
-        >
-          {!yearOfStudy && <Picker.Item label="Select Year of Study" value="" />}
-          <Picker.Item label="BE" value="BE" />
-          <Picker.Item label="TY" value="TY" />
-          <Picker.Item label="SY" value="SY" />
-          <Picker.Item label="FY" value="FY" />
-        </Picker>
-      </View>
+      {!otpSent ? (
+        <Button title="Send OTP" onPress={handleSendOtp} />
+      ) : !otpVerified ? (
+        <>
+          <Text style={styles.label}>OTP</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter OTP"
+            placeholderTextColor="#999"
+            value={otp}
+            onChangeText={setOtp}
+          />
+          <Button title="Verify OTP" onPress={handleVerifyOtp} />
+        </>
+      ) : (
+        <>
+          <Text style={styles.label}>Enrollment Number</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter Enrollment Number"
+            placeholderTextColor="#999"
+            value={enNumber}
+            onChangeText={setEnNumber}
+          />
 
-      <Text style={styles.label}>Select TG_Batch</Text>
-      <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={tg_batch}
-          style={styles.picker}
-          onValueChange={(itemValue) => setTgBatch(itemValue)}
-        >
-          {!tg_batch && <Picker.Item label="Select TG Batch" value="" />}
-          {getTgBatchOptions().map((batch) => (
-            <Picker.Item key={batch} label={batch} value={batch} />
-          ))}
-        </Picker>
-      </View>
+          <Text style={styles.label}>Password</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter Password"
+            placeholderTextColor="#999"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+          />
 
-      <Text style={styles.label}>Parent's Phone Number</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter Parent's Phone Number"
-        placeholderTextColor="#999"
-        value={parentNumber}
-        onChangeText={setParentNumber}
-      />
+          <Text style={styles.label}>Name</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter Name"
+            placeholderTextColor="#999"
+            value={name}
+            onChangeText={setName}
+          />
 
-      <Button title="Signup" onPress={handleSignup} />
+          <Text style={styles.label}>Phone Number</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter Phone Number"
+            placeholderTextColor="#999"
+            value={number}
+            onChangeText={setNumber}
+          />
+
+          <Text style={styles.label}>Department</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={department}
+              style={styles.picker}
+              onValueChange={(itemValue) => setDepartment(itemValue)}
+            >
+              {!department && <Picker.Item label="Select Department" value="" />}
+              <Picker.Item label="Computer Science" value="Computer Science" />
+              <Picker.Item label="Electrical" value="Electrical" />
+              <Picker.Item label="Mechanical" value="Mechanical" />
+              <Picker.Item label="Civil" value="Civil" />
+              <Picker.Item label="Electronics And Telecomunication" value="Electronics And Telecomunication" />
+            </Picker>
+          </View>
+
+          <Text style={styles.label}>Year of Study</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={yearOfStudy}
+              style={styles.picker}
+              onValueChange={(itemValue) => setYearOfStudy(itemValue)}
+            >
+              {!yearOfStudy && <Picker.Item label="Select Year of Study" value="" />}
+              <Picker.Item label="BE" value="BE" />
+              <Picker.Item label="TY" value="TY" />
+              <Picker.Item label="SY" value="SY" />
+              <Picker.Item label="FY" value="FY" />
+            </Picker>
+          </View>
+
+          <Text style={styles.label}>Select TG_Batch</Text>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={tg_batch}
+              style={styles.picker}
+              onValueChange={(itemValue) => setTgBatch(itemValue)}
+            >
+              {!tg_batch && <Picker.Item label="Select TG Batch" value="" />}
+              {getTgBatchOptions().map((batch) => (
+                <Picker.Item key={batch} label={batch} value={batch} />
+              ))}
+            </Picker>
+          </View>
+
+          <Text style={styles.label}>Parent's Phone Number</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter Parent's Phone Number"
+            placeholderTextColor="#999"
+            value={parentNumber}
+            onChangeText={setParentNumber}
+          />
+
+          <Button title="Signup" onPress={handleSignup} />
+        </>
+      )}
     </ScrollView>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -261,6 +329,30 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     color: 'black',
   },
+  emailContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  emailInput: {
+    flex: 1,
+  },
+  disabledInput: {
+    backgroundColor: '#f0f0f0',
+    color: '#666',
+  },
+  verifiedBadge: {
+    backgroundColor: '#4CAF50',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+    marginLeft: 10,
+  },
+  verifiedText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
   pickerContainer: {
     backgroundColor: '#FFF',
     borderRadius: 8,
@@ -276,3 +368,4 @@ const styles = StyleSheet.create({
 });
 
 export default SignupScreen;
+
