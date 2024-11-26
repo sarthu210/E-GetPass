@@ -1,29 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, TextInput, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, Button, StyleSheet, ScrollView } from 'react-native';
 import api from '../utils/api';
 import { useSelector } from 'react-redux';
 
 function PendingReqStud() {
   const [requests, setRequests] = useState([]);
-  const [filteredRequests, setFilteredRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const [branch, setBranch] = useState('');
-  const [tgBatch, setTgBatch] = useState('');
-  const [date, setDate] = useState('');
-  const [searchName, setSearchName] = useState('');
-
   const data = useSelector((state) => state.auth);
   const EnNumber = data?.user?.user?.EnNumber;
-
+    
   // Fetch requests based on student enrollment number
   useEffect(() => {
     const fetchRequests = async () => {
       try {
         const response = await api.post('/api/request/get-requests-by-enrollment', { EnNumber });
         setRequests(response.data.data); // Assuming data contains list of requests for the student
-        setFilteredRequests(response.data.data); // Initialize filteredRequests
         setLoading(false);
       } catch (err) {
         setError(err.message);
@@ -33,33 +25,6 @@ function PendingReqStud() {
 
     fetchRequests();
   }, [EnNumber]);
-
-  // Apply filters
-  const applyFilters = () => {
-    let updatedRequests = [...requests];
-
-    if (branch) {
-      updatedRequests = updatedRequests.filter((req) => req.branch?.toLowerCase() === branch.toLowerCase());
-    }
-
-    if (tgBatch) {
-      updatedRequests = updatedRequests.filter((req) => req.tg_batch?.toLowerCase() === tgBatch.toLowerCase());
-    }
-
-    if (date) {
-      updatedRequests = updatedRequests.filter(
-        (req) => new Date(req.date).toLocaleDateString() === new Date(date).toLocaleDateString()
-      );
-    }
-
-    if (searchName) {
-      updatedRequests = updatedRequests.filter((req) =>
-        req.name?.toLowerCase().includes(searchName.toLowerCase())
-      );
-    }
-
-    setFilteredRequests(updatedRequests);
-  };
 
   if (loading) {
     return (
@@ -81,42 +46,9 @@ function PendingReqStud() {
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Requests for {EnNumber}</Text>
 
-      {/* Filters */}
-      <View style={styles.filterContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Branch"
-          value={branch}
-          onChangeText={setBranch}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="TG Batch"
-          value={tgBatch}
-          onChangeText={setTgBatch}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Date (YYYY-MM-DD)"
-          value={date}
-          onChangeText={setDate}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Search Name"
-          value={searchName}
-          onChangeText={setSearchName}
-        />
-        <Button title="Apply Filters" onPress={applyFilters} />
-      </View>
-
-      {/* Filtered Requests */}
-      {filteredRequests.map((request) => request.securityApproval === false ? (
+      {requests.map((request) => request.securityApproval === false ? (
         <View key={request._id} style={styles.requestContainer}>
           <Text style={styles.info}>Reason: {request.reason}</Text>
-          <Text style={styles.info}>Name: {request.name}</Text>
-          <Text style={styles.info}>Branch: {request.branch}</Text>
-          <Text style={styles.info}>TG Batch: {request.tg_batch}</Text>
           <Text style={styles.info}>Teacher Approval: {request.teacherApproval ? 'Approved' : 'Pending'}</Text>
           <Text style={styles.info}>HOD Approval: {request.hodApproval ? 'Approved' : 'Pending'}</Text>
           <Text style={styles.info}>Hostel Approval: {request.hostelApproval ? 'Approved' : 'Pending'}</Text>
@@ -124,7 +56,7 @@ function PendingReqStud() {
           <Text style={styles.info}>Message Sent: {request.isMessageSend ? 'Yes' : 'No'}</Text>
           <Text style={styles.info}>Date: {new Date(request.date).toLocaleString()}</Text>
         </View>
-      ) : null)}
+      ): null)}
     </ScrollView>
   );
 }
@@ -141,17 +73,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
     color: 'black',
-  },
-  filterContainer: {
-    marginBottom: 20,
-  },
-  input: {
-    backgroundColor: '#fff',
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 5,
-    borderColor: '#ddd',
-    borderWidth: 1,
   },
   requestContainer: {
     marginBottom: 20,
